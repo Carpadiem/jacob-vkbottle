@@ -1,3 +1,5 @@
 from . import start
 
-keyboards = {'start': start.keyboard}
+keyboards = {
+    'start': start.keyboard
+}

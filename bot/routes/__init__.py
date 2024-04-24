@@ -1,3 +1,3 @@
-from . import start, help
+from . import help, start
 
 labelers = [start.bl, help.bl]
