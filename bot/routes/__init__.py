@@ -1,3 +1,3 @@
-from . import greetings
+from . import start
 
-labelers = [greetings.bl]
+labelers = [start.bl]
