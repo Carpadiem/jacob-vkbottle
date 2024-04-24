@@ -25,7 +25,6 @@ game_commands = {
             { 'command_text': 'Питомец' },
             { 'command_text': 'Кейсы' },
             { 'command_text': 'Достижения' },
-            { 'command_text': 'Паспорт' },
         ]
     },
     # category
@@ -81,7 +80,6 @@ async def help(m: Message):
         answer_text += category_text + '\n'
         for command in category_commands:
             answer_text += f'⠀⠀{command["command_text"]}\n'
-        
         answer_text += '\n'
 
     await m.answer(message=answer_text)
