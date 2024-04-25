@@ -1,4 +1,4 @@
-import mysql.connector
+from mysql.connector.aio import connect as mysql_connect
 from models.entity import Entity
 from tools.log import Log
 
@@ -13,36 +13,36 @@ class Repository:
     def __init__(self, entity: Entity):
         self.entity = entity
 
-    def connect(self):
+    async def connect(self):
         try:
-            self.connection = mysql.connector.connect(**connection_config)
-            self.cursor = self.connection.cursor(buffered=True, dictionary=True)
+            self.connection = await mysql_connect(**connection_config)
+            self.cursor = await self.connection.cursor(buffered=True, dictionary=True)
         except Exception as e:
             Log(f'[exception][repository.py / def connect]: {e}')
 
-    def find_one_by(self, where: dict):
+    async def find_one_by(self, where: dict):
         '''Example `where` argument: `{ 'user_id': 230990098 }`'''
         try:
             # split where
             where_key = list(where.keys())[0]
             where_value = list(where.values())[0]
             # open connection & make query
-            self.connect()
+            await self.connect()
             query = f'SELECT * FROM {self.entity.table_name} WHERE {where_key}="{where_value}"'
-            self.cursor.execute(query)
-            row: dict = self.cursor.fetchone()
+            await self.cursor.execute(query)
+            row: dict = await self.cursor.fetchone()
             if row == None:
                 return None
             # change python-variable of object by string data
             for k, v in row.items():
                 setattr(self.entity, k, v)
             # save & close connection
-            self.close()
+            await self.close()
             return self.entity
         except Exception as e:
             Log(f'[exception][repository.py / def find_one_by]: {e}')
     
-    def create(self, entity_like: dict) -> Entity:
+    async def create(self, entity_like: dict) -> Entity:
         try:
             new_entity: type[self.entity] = self.entity
             for k, v in entity_like.items():
@@ -51,7 +51,7 @@ class Repository:
         except Exception as e:
             Log(f'[exception][repository.py / def create]: {e}')
 
-    def save(self, entity: Entity):
+    async def save(self, entity: Entity):
         try:
             # reserve table_name        
             table_name = entity.table_name
@@ -67,14 +67,14 @@ class Repository:
                 quoted_values.append(v)
             values = quoted_values
             # open connection, make query, close connection
-            self.connect()
+            await self.connect()
             query = f'INSERT IGNORE INTO {table_name} ({", ".join(keys)}) VALUES ({", ".join([str(x) for x in values])})'
-            self.cursor.execute(query)
-            self.close()
+            await self.cursor.execute(query)
+            await self.close()
         except Exception as e:
             Log(f'[exception][repository.py / def save]: {e}')
 
-    def update(self, where: dict, field: dict):
+    async def update(self, where: dict, field: dict):
         try:
             table_name = self.entity.table_name
             # split where, field
@@ -83,29 +83,30 @@ class Repository:
             field_key = list(field.keys())[0]
             field_value = list(field.values())[0]
             # open, make query, close
-            self.connect()
+            await self.connect()
             query = f'UPDATE {table_name} SET {field_key}="{field_value}" WHERE {where_key}="{where_value}"'
-            self.cursor.execute(query)
-            self.close()
+            await self.cursor.execute(query)
+            await self.close()
         except Exception as e:
             Log(f'[exception][repository.py / def update]: {e}')
 
     
-    def count(self):
+    async def count(self):
         try:
-            self.connect()
+            await self.connect()
             query = f'SELECT * FROM {self.entity.table_name}'
-            self.cursor.execute(query)
-            row = self.cursor.fetchall()
-            self.close()
+            await self.cursor.execute(query)
+            row = await self.cursor.fetchall()
+            await self.close()
             return len(row)
         except Exception as e:
             Log(f'[exception][repository.py / def count]: {e}')
     
-    def close(self):
+    async def close(self):
         try:
-            self.connection.commit()
-            self.connection.close()
+            await self.connection.commit()
+            await self.cursor.close()
+            await self.connection.close()
         except Exception as e:
             Log(f'[exception][repository.py / def close]: {e}')
         

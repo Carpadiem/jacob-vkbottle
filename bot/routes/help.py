@@ -2,6 +2,7 @@
 from vkbottle.bot import BotLabeler, Message
 from fuzzywuzzy import fuzz
 from emojies import emojies
+from rules import PayloadContainsOrTextRule
 
 # create labeler
 bl = BotLabeler()
@@ -74,12 +75,11 @@ game_commands = {
     },
 }
 
-
 # handlers
-@bl.message(text='помощь')
+
+@bl.message(PayloadContainsOrTextRule(payload={ 'action_type': 'button', 'action': 'show_help' }, text='помощь'))
 async def help(m: Message):    
     answer_text = f'Список команд в игре:\n\n'
-
     for category, value in game_commands.items():
         category_text: str = value['category_text']
         category_emoji: str = value['category_emoji']
@@ -89,7 +89,6 @@ async def help(m: Message):
             command_emoji = command['command_emoji']
             answer_text += f'⠀⠀{command_emoji} {command["command_text"]}\n'
         answer_text += '\n'
-
     await m.answer(message=answer_text)
 
 
