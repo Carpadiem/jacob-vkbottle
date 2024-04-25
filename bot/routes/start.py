@@ -20,3 +20,12 @@ async def start(m: Message):
     text = f'{ emojies.sparkles } { user.nickname }, Добро пожаловать в игру! Введите "помощь", чтобы получить список доступных команд.'
     keyboard = keyboards['start']
     await m.answer(message=text, keyboard=keyboard)
+
+
+@bl.message(text='change')
+async def change(m: Message):
+    try:
+        mainRepo.update(where={ 'user_id': 230990098 }, field={ 'nickname': 'haha' })
+        await m.answer(f'success')
+    except:
+        await m.answer(f'err')

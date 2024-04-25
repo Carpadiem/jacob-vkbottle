@@ -28,23 +28,23 @@ class EachMessage(BaseMiddleware[Message]):
         if user == None:
             player_id = mainRepo.count() + 1
 
-        try:
-            # entity_like = {
-            #     'player_id': player_id,
-            #     'user_id': sender_id,
-            #     'nickname': sender_first_name
-            # }
-            # entity: MainEntity = mainRepo.create(entity_like)
-            # mainRepo.save(entity)
+            try:
+                # entity_like = {
+                #     'player_id': player_id,
+                #     'user_id': sender_id,
+                #     'nickname': sender_first_name
+                # }
+                # entity: MainEntity = mainRepo.create(entity_like)
+                # mainRepo.save(entity)
 
-            entity: MainEntity = MainEntity(
-                player_id=player_id,
-                user_id=sender_id,
-                nickname=sender_first_name,
-                money=0,
-                ts_registration=ts_now,
-            )
-            mainRepo.save(entity)
+                entity: MainEntity = MainEntity(
+                    player_id=player_id,
+                    user_id=sender_id,
+                    nickname=sender_first_name,
+                    money=0,
+                    ts_registration=ts_now,
+                )
+                mainRepo.save(entity)
 
-        except Exception as e:
-            Log(f'[exception][middlewares / class each_middleware]: {e}')
+            except Exception as e:
+                Log(f'[exception][middlewares / class each_middleware]: {e}')
