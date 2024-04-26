@@ -90,31 +90,3 @@ async def help(m: Message):
             answer_text += f'⠀⠀{command_emoji} {command["command_text"]}\n'
         answer_text += '\n'
     await m.answer(message=answer_text)
-
-
-@bl.message()
-async def unknown_message(m: Message):
-    input_text = m.text
-    matches = []
-    # получение текстов игровых команд
-    text_selections: list = []
-    for category, value in game_commands.items():
-        category_commands = value['category_commands']
-        for command in category_commands:
-            command_text = command['command_text']
-            text_selections.append(command_text)
-    # поиск похожих слов
-    for text in text_selections:
-        percent = fuzz.WRatio(input_text, text)
-        if percent >= 60: # 60 - процент совпадения похожих фраз
-            matches.append(text)
-    # если похожие слова есть
-    if len(matches) > 0:
-        answer_text = f'Такой команды нет. Возможно, вы имели в виду:\n\n'
-        for match in range(len(matches)):
-            answer_text += f'{matches[match]}\n'
-        answer_text += f'\n\nВведите "помощь", чтобы получить список доступных команд'
-        await m.answer(answer_text)
-    else:
-        answer_text = 'Такой команды нет\nВведите "помощь", чтобы получить список доступных команд.'
-        await m.answer(answer_text)

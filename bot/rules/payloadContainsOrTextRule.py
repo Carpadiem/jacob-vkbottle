@@ -8,4 +8,4 @@ class PayloadContainsOrTextRule(ABCRule[BaseMessageMin]):
         self.text = text
 
     async def check(self, event: BaseMessageMin) -> bool:
-        return await PayloadContainsRule(self.payload).check(event) or event.text == self.text
+        return await PayloadContainsRule(self.payload).check(event) or event.text.lower() == self.text.lower()

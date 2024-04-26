@@ -1,6 +1,6 @@
 from models.entity import Entity
 
-class MainEntity(Entity):
+class PlayerEntity(Entity):
     def __init__(
             self, 
             player_id=0,
@@ -12,7 +12,7 @@ class MainEntity(Entity):
             special_currency=0,
             ts_registration=0,
         ):
-        self.table_name: str = 'main'
+        self.table_name: str = 'player'
         self.player_id: int = player_id
         self.user_id: int = user_id
         self.nickname: str = nickname
@@ -21,6 +21,3 @@ class MainEntity(Entity):
         self.experience: int = experience
         self.special_currency: int = special_currency
         self.ts_registration: int = ts_registration
-
-    def set_values(self):
-        pass

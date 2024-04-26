@@ -1,5 +1,6 @@
-from . import start
+from . import start, general
 
 keyboards = {
-    'start': start.keyboard
+    'start': start.keyboard,
+    'general': general.keyboard,
 }

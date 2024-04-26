@@ -1,6 +1,4 @@
-from .main import MainEntity as main_entity
-from .bank import BankEntity as bank_entity
+from .player import PlayerEntity as player_entity
 
 
-MainEntity = main_entity
-BankEntity = bank_entity
+PlayerEntity = player_entity
