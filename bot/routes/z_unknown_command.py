@@ -35,8 +35,8 @@ async def unknown_message(m: Message):
     # если похожие слова есть
     if len(matches) > 0:
         answer_text = f'{ emojies.sparkles } { player.nickname }, Такой команды нет. Возможно, вы имели в виду:\n\n'
-        for match in range(len(matches)):
-            answer_text += f'{matches[match]}\n'
+        for i in range(len(matches)):
+            answer_text += f'{ emojies.numbers[i+1] } { matches[i] }\n'
         answer_text += f'\n\nВведите "помощь", чтобы получить список доступных команд'
         await m.answer(answer_text)
     else:

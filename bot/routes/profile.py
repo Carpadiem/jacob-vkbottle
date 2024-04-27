@@ -1,7 +1,4 @@
 # imports
-from textwrap import dedent, fill
-from datetime import datetime
-import re
 # vkbottle
 from vkbottle.bot import BotLabeler, Message
 # rules

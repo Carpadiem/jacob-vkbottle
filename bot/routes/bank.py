@@ -1,0 +1,176 @@
+# imports
+# vkbottle
+from vkbottle.bot import BotLabeler, Message
+from vkbottle import BaseStateGroup
+from vkbottle.dispatch.rules.base import PayloadContainsRule
+# rules
+from rules import PayloadContainsOrTextRule
+# keyboards
+from keyboards import keyboards
+# database
+from database.entities import PlayerEntity, BankEntity
+from database.repository import Repository
+# emojies
+from emojies import emojies
+# states
+# from ..bot import my_state_dispenser
+from config_states import my_state_dispenser
+# tools
+from tools.isNumber import isNumber
+from tools.log import Log
+
+# create labeler
+bl = BotLabeler()
+bl.vbml_ignore_case = True
+
+# repos
+playerRepo = Repository(entity=PlayerEntity())
+bankRepo = Repository(entity=BankEntity())
+
+
+
+
+async def clear_current_state(m: Message):
+    current_state = await my_state_dispenser.get(m.peer_id)
+    if current_state != None: await my_state_dispenser.delete(m.peer_id)
+
+async def error_message(m: Message, text: str, keyboard=None, clear_state: bool=False):
+    await m.answer(message=text, keyboard=keyboard)
+    if clear_state:
+        await clear_current_state(m)
+
+
+
+
+# handlers
+@bl.message(PayloadContainsOrTextRule(payload={ 'action_type': 'button', 'action': 'show_bank' }, text='банк'))
+async def money(m: Message):
+    # entities
+    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    bank: BankEntity = await bankRepo.find_one_by({ 'user_id': m.from_id })
+    # keyboard
+    keyboard = keyboards['bank']
+
+    text = f'''{ emojies.bank } { player.nickname } , Банковский счет: ${bank.score:,} {emojies.dollar_banknote}
+
+    { emojies.down_arrow } Пополнить: Банк пополнить
+    { emojies.up_arrow } Пополнить: Банк снять
+    { emojies.money_wings } Перевести игроку: Банк перевод
+    '''.replace('    ', '')
+    await m.answer(message=text, keyboard=keyboard)
+
+
+
+# head handlers (text handlers)
+# empty
+
+
+
+@bl.message(PayloadContainsRule({ 'action_type': 'button', 'action': 'bank_cancel' }))
+async def bank_cancel(m: Message):
+    # clear current state if exist
+    current_state = await my_state_dispenser.get(m.peer_id)
+    if current_state != None: await my_state_dispenser.delete(m.peer_id)
+    # answer
+    text = f'{ emojies.sparkles } Операция отменена'
+    keyboard = keyboards['bank']
+    await m.answer(message=text, keyboard=keyboard)
+
+
+
+
+# keyboard or text handler
+@bl.message(PayloadContainsOrTextRule(payload={'action_type': 'button', 'action': 'bank_push'}, text=['банк пополнить']))
+async def bank_push_state(m: Message):
+    # entities
+    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    # answer
+    text = f'{ emojies.bank } { player.nickname }, Введите сумму для пополнения:'
+    await m.answer(message=text, keyboard=keyboards['bank_cancel'])
+    # set state
+    await my_state_dispenser.set(m.peer_id, BankPushStates.BANK_PUSH_STATE, payload={ 'player': player })
+
+# state handler
+class BankPushStates(BaseStateGroup):
+    BANK_PUSH_STATE = 'bank_push_state'
+
+@bl.message(state=BankPushStates.BANK_PUSH_STATE)
+async def state_bank_push_state(m: Message):
+    # get player from payload
+    payload = m.state_peer.payload['payload']
+    player: PlayerEntity = payload['player']
+    # args validation
+    amount = m.text
+    if not isNumber(amount):
+        # error message
+        await error_message(m=m, text=f'{ emojies.sparkles } { player.nickname }, Укажите целое число', keyboard=keyboards['bank'], clear_state=True)
+        return
+    # update bank score
+    bank: BankEntity = await bankRepo.find_one_by({ 'user_id': m.from_id })
+    if player.money < int(amount): # check player money
+        # error message
+        await error_message(
+            m=m,
+            text=f'{ emojies.sparkles } { player.nickname }, Не хватает денег. У вас: ${ player.money:, } { emojies.dollar_banknote }',
+            keyboard=keyboards['bank'],
+            clear_state=True
+        )
+        return
+    # update
+    await bankRepo.update({ 'user_id': m.from_id }, { 'score': bank.score + int(amount) })
+    await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money - int(amount) })
+    # answer
+    text = f'{ emojies.checkmark } { player.nickname }, Успешное пополнение счета на ${int(amount):,} { emojies.dollar_banknote }'
+    await m.answer(message=text, keyboard=keyboards['bank'])
+    # clear current state
+    await clear_current_state(m)
+
+
+
+
+# keyboard or text handler
+@bl.message(PayloadContainsOrTextRule(payload={'action_type': 'button', 'action': 'bank_pull'}, text=['банк снять']))
+async def bank_pull_state(m: Message):
+    # entities
+    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    # answer
+    text = f'{ emojies.bank } { player.nickname }, Введите сумму для снятия:'
+    await m.answer(message=text, keyboard=keyboards['bank_cancel'])
+    # set state
+    await my_state_dispenser.set(m.peer_id, BankPullStates.BANK_PULL_STATE, payload={ 'player': player })
+
+# state handler
+class BankPullStates(BaseStateGroup):
+    BANK_PULL_STATE = 'bank_pull_state'
+
+@bl.message(state=BankPullStates.BANK_PULL_STATE)
+async def state_bank_pull_state(m: Message):
+    # get player from payload
+    payload = m.state_peer.payload['payload']
+    player: PlayerEntity = payload['player']
+    # keyboard
+    # args validation
+    amount = m.text
+    if not isNumber(amount):
+        # error message
+        await error_message(m=m, text=f'{ emojies.sparkles } { player.nickname }, Укажите целое число', keyboard=keyboards['bank'], clear_state=True)
+        return
+    # update bank score
+    bank: BankEntity = await bankRepo.find_one_by({ 'user_id': m.from_id })
+    if bank.score < int(amount): # check bank score
+        # error message
+        await error_message(
+            m=m,
+            text=f'{ emojies.sparkles } { player.nickname }, Недостаточно на счете. У вас: ${bank.score:,} { emojies.dollar_banknote }',
+            keyboard=keyboards['bank'],
+            clear_state=True,
+        )
+        return
+    # update
+    await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + int(amount) })
+    await bankRepo.update({ 'user_id': m.from_id }, { 'score': bank.score - int(amount) })
+    # answer
+    text = f'{ emojies.checkmark } { player.nickname }, Успешное снятия со счета ${int(amount):,} { emojies.dollar_banknote }'
+    await m.answer(message=text, keyboard=keyboards['bank'])
+    # clear current state
+    await clear_current_state(m)
