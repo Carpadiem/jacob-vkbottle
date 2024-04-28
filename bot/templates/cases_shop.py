@@ -15,7 +15,6 @@ def func_template(counts: list):
         keyboard = Keyboard(one_time=False, inline=False)
         keyboard.add(Text(label='Купить', payload={ 'action_type': 'button', 'action': 'buy_case', 'case_id': k }), color=KeyboardButtonColor.SECONDARY)
         keyboard.add(Text(label=f'Открыть ({counts[k-1]} шт.)', payload={ 'action_type': 'button', 'action': 'open_case', 'case_id': k }), color=KeyboardButtonColor.PRIMARY)
-        keyboard.add(Text(label='Информация', payload={ 'action_type': 'button', 'action': 'info_case', 'case_id': k }), color=KeyboardButtonColor.SECONDARY)
         keyboard = keyboard.get_json()
         # add templateElement to array
         template_elements.append(TemplateElement(title=name, description=desc, buttons=keyboard))

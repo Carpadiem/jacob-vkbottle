@@ -29,7 +29,7 @@ playerRepo = Repository(entity=PlayerEntity())
 casesRepo = Repository(entity=CasesEntity())
 
 # handlers
-@bl.message(text='кейсы')
+@bl.message(PayloadContainsOrTextRule(payload={ 'action_type': 'button', 'action': 'show_cases_shop' }, text=['кейсы', 'кейс']))
 async def cases_shop(m: Message):
     # entities
     player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
@@ -128,7 +128,14 @@ async def open_case(m: Message):
     keyboard = None
     if current_case_count > 0:
         keyboard = Keyboard(one_time=False, inline=True)
-        keyboard.add(Text(label=f'Открыть еще ({current_case_count} шт.)', payload={ 'action_type': 'button', 'action': 'open_case', 'case_id': case_id }))
+        keyboard.add(Text(label=f'Открыть еще ({current_case_count} шт.)', payload={ 'action_type': 'button', 'action': 'open_case', 'case_id': case_id }), color=KeyboardButtonColor.PRIMARY)
+        keyboard.row()
+        keyboard.add(Text(label=f'В магазин', payload={ 'action_type': 'button', 'action': 'show_cases_shop' }), color=KeyboardButtonColor.SECONDARY)
         keyboard = keyboard.get_json()
+    else:
+        keyboard = Keyboard(one_time=False, inline=True)
+        keyboard.add(Text(label=f'В магазин', payload={ 'action_type': 'button', 'action': 'show_cases_shop' }), color=KeyboardButtonColor.SECONDARY)
+        keyboard = keyboard.get_json()
+
     # answer
     await m.answer(message=text, keyboard=keyboard)
