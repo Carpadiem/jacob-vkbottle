@@ -5,5 +5,5 @@ keyboards = {
     'general': general.keyboard,
     
     'bank': bank.keyboard,
-    'bank_cancel': bank.keyboard_cancel
+    'bank_cancel': bank.keyboard_cancel,
 }

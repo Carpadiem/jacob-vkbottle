@@ -15,9 +15,11 @@ from emojies import emojies
 # states
 # from ..bot import my_state_dispenser
 from config_states import my_state_dispenser
+# utils
+from utils.isNumber import isNumber
+from utils.log import Log
 # tools
-from tools.isNumber import isNumber
-from tools.log import Log
+from tools import error_message, clear_current_state
 
 # create labeler
 bl = BotLabeler()
@@ -30,14 +32,14 @@ bankRepo = Repository(entity=BankEntity())
 
 
 
-async def clear_current_state(m: Message):
-    current_state = await my_state_dispenser.get(m.peer_id)
-    if current_state != None: await my_state_dispenser.delete(m.peer_id)
+# async def clear_current_state(m: Message):
+#     current_state = await my_state_dispenser.get(m.peer_id)
+#     if current_state != None: await my_state_dispenser.delete(m.peer_id)
 
-async def error_message(m: Message, text: str, keyboard=None, clear_state: bool=False):
-    await m.answer(message=text, keyboard=keyboard)
-    if clear_state:
-        await clear_current_state(m)
+# async def error_message(m: Message, text: str, keyboard=None, clear_state: bool=False):
+#     await m.answer(message=text, keyboard=keyboard)
+#     if clear_state:
+#         await clear_current_state(m)
 
 
 

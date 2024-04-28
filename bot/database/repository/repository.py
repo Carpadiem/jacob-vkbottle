@@ -1,6 +1,6 @@
 from mysql.connector.aio import connect as mysql_connect
 from models.entity import Entity
-from tools.log import Log
+from utils.log import Log
 
 connection_config = {
     'host': 'localhost',

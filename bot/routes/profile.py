@@ -9,7 +9,7 @@ from database.repository import Repository
 # emojies
 from emojies import emojies
 # tools
-from tools.ts2date import ts2date
+from utils.ts2date import ts2date
 
 # create labeler
 bl = BotLabeler()

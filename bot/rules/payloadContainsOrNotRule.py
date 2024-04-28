@@ -1,6 +1,6 @@
 from typing import Union, List
 from vkbottle.dispatch.rules.base import BaseMessageMin, ABCRule
-from tools.isSubset import isSubset
+from utils.isSubset import isSubset
 
 class PayloadContainsOrNotRule(ABCRule[BaseMessageMin]):
     def __init__(self, payload: dict):

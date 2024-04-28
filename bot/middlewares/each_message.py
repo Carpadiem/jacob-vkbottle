@@ -6,12 +6,13 @@ from vkbottle.bot import Message
 from vkbottle import BaseMiddleware
 # database
 from database.repository import Repository
-from database.entities import PlayerEntity, BankEntity
-from tools.log import Log
+from database.entities import PlayerEntity, BankEntity, CasesEntity
+from utils.log import Log
 
 # init repo
 playerRepo = Repository(entity=PlayerEntity())
 bankRepo = Repository(entity=BankEntity())
+casesRepo = Repository(entity=CasesEntity())
 
 class EachMessage(BaseMiddleware[Message]):
     async def pre(self):
@@ -42,6 +43,7 @@ class EachMessage(BaseMiddleware[Message]):
         # entity: PlayEntity = playerRepo.create(entity_like)
         # mainRepo.save(entity)
 
+        # init player-player in table
         playerEntity: PlayerEntity = PlayerEntity(
             player_id=player_id,
             user_id=sender_id,
@@ -51,7 +53,8 @@ class EachMessage(BaseMiddleware[Message]):
         )
         try: await playerRepo.save(playerEntity)
         except Exception as e: Log(f'[exception][each_middleware / save player entity]: {e}')
-            
+        
+        # init player-bank in table
         bankEntity: BankEntity = BankEntity(
             player_id=player_id,
             user_id=sender_id,
@@ -62,3 +65,15 @@ class EachMessage(BaseMiddleware[Message]):
         )
         try: await bankRepo.save(bankEntity)
         except Exception as e: Log(f'[exception][each_middleware / save bank entity]: {e}')
+
+        # init player-cases in table
+        casesEntity: CasesEntity = CasesEntity(
+            player_id=player_id,
+            user_id=sender_id,
+            count_1=0,
+            count_2=0,
+            count_3=0,
+            count_4=0,
+        )
+        try: await casesRepo.save(casesEntity)
+        except Exception as e: Log(f'[exception][each_middleware / save cases entity]: {e}')
