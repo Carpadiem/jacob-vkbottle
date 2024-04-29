@@ -7,5 +7,6 @@ keyboards = {
     'bank': bank.keyboard,
     'bank_cancel': bank.keyboard_cancel,
 
-    'business': business.keyboard
+    'business': business.keyboard,
+    'my_business': business.keyboard_my_business,
 }

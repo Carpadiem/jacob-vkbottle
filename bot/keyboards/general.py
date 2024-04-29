@@ -9,7 +9,7 @@ keyboard.add(Text(label=f'{emojies.dollar_banknote} Деньги', payload={'act
 keyboard.add(Text(label=f'{emojies.bank} Банк', payload={'action_type': 'button', 'action': 'show_bank'}), color=KeyboardButtonColor.SECONDARY)
 keyboard.row()
 keyboard.add(Text(label=f'{emojies.backpack} Инвентарь', payload={'action_type': 'button', 'action': 'show_inventory'}), color=KeyboardButtonColor.SECONDARY)
-keyboard.add(Text(label=f'{emojies.briefcase} Мой бизнес', payload={'action_type': 'button', 'action': 'show_business'}), color=KeyboardButtonColor.SECONDARY)
+keyboard.add(Text(label=f'{emojies.briefcase} Бизнес', payload={'action_type': 'button', 'action': 'show_business'}), color=KeyboardButtonColor.SECONDARY)
 keyboard.row()
 keyboard.add(Text(label=f'{emojies.wood} Ресурсы', payload={'action_type': 'button', 'action': 'show_resources'}), color=KeyboardButtonColor.SECONDARY)
 keyboard.add(Text(label=f'{emojies.desktop} Работа', payload={'action_type': 'button', 'action': 'show_job'}), color=KeyboardButtonColor.SECONDARY)

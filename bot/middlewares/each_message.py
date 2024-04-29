@@ -6,13 +6,14 @@ from vkbottle.bot import Message
 from vkbottle import BaseMiddleware
 # database
 from database.repository import Repository
-from database.entities import PlayerEntity, BankEntity, CasesEntity
+from database.entities import PlayerEntity, BankEntity, CasesEntity, BusinessEntity
 from utils.log import Log
 
 # init repo
 playerRepo = Repository(entity=PlayerEntity())
 bankRepo = Repository(entity=BankEntity())
 casesRepo = Repository(entity=CasesEntity())
+businessRepo = Repository(entity=BusinessEntity())
 
 class EachMessage(BaseMiddleware[Message]):
     async def pre(self):
@@ -77,3 +78,13 @@ class EachMessage(BaseMiddleware[Message]):
         )
         try: await casesRepo.save(casesEntity)
         except Exception as e: Log(f'[exception][each_middleware / save cases entity]: {e}')
+
+        # init bank
+        businessEntity: BusinessEntity = BusinessEntity(
+            player_id=player_id,
+            user_id=sender_id,
+            business_id=0,
+            ts_previous_profit=ts_now,
+        )
+        try: await businessRepo.save(businessEntity)
+        except Exception as e: Log(f'[exception][each_middleware / save business entity]: {e}')
