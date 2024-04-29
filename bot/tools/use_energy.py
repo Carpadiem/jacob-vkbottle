@@ -6,11 +6,10 @@ from database.repository import Repository
 from database.entities import EnergyEntity
 # constants
 from constants import max_player_energy as MAX_PLAYER_ENERGY
-from constants import energy_recovery_time_in_minutes as ENERGY_RECOVERY_TIME_IN_MINUTES
 # utils
 from utils.ts_now import ts_now
-# tools
-from tools.get_energy import get_energy
+# local folder
+from .get_energy import get_energy
 
 # repos
 energyRepo = Repository(entity=EnergyEntity())

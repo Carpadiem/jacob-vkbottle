@@ -57,7 +57,6 @@ async def job_work(m: Message):
         '''.replace('    ', '')
         await error_message(m, text)
         return
-    
     # check is player have experience for work
     job_requirements_experience = game_jobs[job_id]['requirements']['experience']
     if player.experience < job_requirements_experience:
@@ -68,21 +67,16 @@ async def job_work(m: Message):
         '''.replace('    ', '')
         await error_message(m, text)
         return
-    
     # calculate earnings
     job_earnings_money = game_jobs[job_id]['earnings_money']
     e_min = job_earnings_money['min']
     e_max = job_earnings_money['max']
     e_step = job_earnings_money['step']
     earnings = randrange(e_min, e_max, e_step)
-
-    # update money
-    await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + earnings })
-    # update experience
-    await playerRepo.update({ 'user_id': m.from_id }, { 'experience': player.experience + JOB_ADDING_EXPERIENCE })
-    # update energy
-    await use_energy(m.from_id)
-
+    # updates
+    await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + earnings }) # update money
+    await playerRepo.update({ 'user_id': m.from_id }, { 'experience': player.experience + JOB_ADDING_EXPERIENCE }) # update experience
+    await use_energy(m.from_id) # update energy
     # answer
     text = f'''{ emojies.desktop } { player.nickname }, Успешный рабочий день!
 
