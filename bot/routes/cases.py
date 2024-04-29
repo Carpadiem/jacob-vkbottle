@@ -35,15 +35,9 @@ async def cases_shop(m: Message):
     player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
     cases: CasesEntity = await casesRepo.find_one_by({ 'user_id': m.from_id })
     # answer
-    text = f'{ emojies.package } { player.nickname }, Магазин кейсов:'
+    text = f'{ emojies.package } { player.nickname }, Меню кейсов:'
     template = templates['cases_shop'](counts=[cases.count_1, cases.count_2, cases.count_3, cases.count_4])
     await m.answer(message=text, template=template)
-    # second answer
-    text = f'''
-    { emojies.package } Открыть: Кейс открыть [1-4]
-    { emojies.backpack } Ваши кейсы: "Инвентарь"
-    '''.replace('    ', '')
-    await m.answer(text)
 
 
 @bl.message(PayloadContainsRule({ 'action_type': 'button', 'action': 'buy_case' }))
@@ -69,7 +63,6 @@ async def buy_case(m: Message):
     # answer
     text = f'''
     { emojies.package } { player.nickname }, Успешная покупка x1 { game_cases[case_id]["name"] }!
-    { emojies.tip } Посмотреть кейсы в инвентаре: Инвентарь
     '''.replace('    ', '')
     await m.answer(text)
 
