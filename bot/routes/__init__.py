@@ -1,4 +1,4 @@
-from . import z_unknown_command, start, help, profile, money, bank, cases, business
+from . import z_unknown_command, start, help, profile, money, bank, cases, business, job
 
 labelers = [
     start.bl,
@@ -8,5 +8,6 @@ labelers = [
     bank.bl,
     cases.bl,
     business.bl,
+    job.bl,
     z_unknown_command.bl,
 ]

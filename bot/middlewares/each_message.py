@@ -6,7 +6,7 @@ from vkbottle.bot import Message
 from vkbottle import BaseMiddleware
 # database
 from database.repository import Repository
-from database.entities import PlayerEntity, BankEntity, CasesEntity, BusinessEntity
+from database.entities import PlayerEntity, BankEntity, CasesEntity, BusinessEntity, EnergyEntity
 from utils.log import Log
 
 # init repo
@@ -14,6 +14,7 @@ playerRepo = Repository(entity=PlayerEntity())
 bankRepo = Repository(entity=BankEntity())
 casesRepo = Repository(entity=CasesEntity())
 businessRepo = Repository(entity=BusinessEntity())
+energyRepo = Repository(entity=EnergyEntity())
 
 class EachMessage(BaseMiddleware[Message]):
     async def pre(self):
@@ -88,3 +89,13 @@ class EachMessage(BaseMiddleware[Message]):
         )
         try: await businessRepo.save(businessEntity)
         except Exception as e: Log(f'[exception][each_middleware / save business entity]: {e}')
+
+        # init energy
+        energyEntity: EnergyEntity = EnergyEntity(
+            player_id=player_id,
+            user_id=sender_id,
+            energy=20,
+            ts_previous_use=ts_now,
+        )
+        try: await energyRepo.save(energyEntity)
+        except Exception as e: Log(f'[exception][each_middleware / save energy entity]: {e}')

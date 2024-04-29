@@ -1,0 +1,28 @@
+# imports
+# vkbottle
+from vkbottle.bot import Message
+# database
+from database.repository import Repository
+from database.entities import EnergyEntity
+# constants
+from constants import max_player_energy as MAX_PLAYER_ENERGY
+from constants import energy_recovery_time_in_minutes as ENERGY_RECOVERY_TIME_IN_MINUTES
+# utils
+from utils.ts_now import ts_now
+# tools
+from tools.get_energy import get_energy
+
+# repos
+energyRepo = Repository(entity=EnergyEntity())
+
+# funcs
+async def use_energy(user_id: int, amount: int = 1):
+    # entities
+    energy: EnergyEntity = await energyRepo.find_one_by({ 'user_id': user_id })
+    # calculate player energy ( current + accumulated )
+    player_energy = await get_energy(user_id) # return round(current + accumulated)
+    if player_energy > MAX_PLAYER_ENERGY:
+        player_energy = MAX_PLAYER_ENERGY
+    # ... 
+    await energyRepo.update({ 'user_id': user_id }, { 'energy': player_energy - amount }) # update currrent energy
+    await energyRepo.update({ 'user_id': user_id }, { 'ts_previous_use': ts_now() }) # update ts_previous_use

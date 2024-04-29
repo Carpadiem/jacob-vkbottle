@@ -1,4 +1,4 @@
-from . import start, general, bank, business
+from . import jobs, start, general, bank, business
 
 keyboards = {
     'start': start.keyboard,
@@ -9,4 +9,6 @@ keyboards = {
 
     'business': business.keyboard,
     'my_business': business.keyboard_my_business,
+
+    'jobs': jobs.keyboard
 }

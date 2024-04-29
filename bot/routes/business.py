@@ -174,4 +174,3 @@ async def business_sell(m: Message):
     await m.answer(message=text, keyboard=keyboards['business'])
 
 
-
