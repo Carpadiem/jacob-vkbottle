@@ -87,8 +87,6 @@ async def state_bet_state(m: Message):
             await error_message(
                 m=m,
                 text=text,
-                keyboard=None,
-                clear_state=False
             )
             return
         else:

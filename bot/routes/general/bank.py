@@ -103,7 +103,8 @@ async def state_bank_push_state(m: Message):
     amount = m.text
     if not isNumber(amount):
         # error message
-        await error_message(m=m, text=f'{ emojies.sparkles } { player.nickname }, Укажите целое число', keyboard=keyboards['bank'], clear_state=True)
+        await error_message(m=m, text=f'{ emojies.sparkles } { player.nickname }, Укажите целое число', keyboard=keyboards['bank'])
+        await clear_current_state(m)
         return
     # update bank score
     bank: BankEntity = await bankRepo.find_one_by({ 'user_id': m.from_id })
@@ -113,8 +114,8 @@ async def state_bank_push_state(m: Message):
             m=m,
             text=f'{ emojies.sparkles } { player.nickname }, Не хватает денег. У вас: ${ player.money:, } { emojies.dollar_banknote }',
             keyboard=keyboards['bank'],
-            clear_state=True
         )
+        await clear_current_state(m)
         return
     # update
     await bankRepo.update({ 'user_id': m.from_id }, { 'score': bank.score + int(amount) })
@@ -162,8 +163,8 @@ async def state_bank_pull_state(m: Message):
             m=m,
             text=f'{ emojies.sparkles } { player.nickname }, Недостаточно на счете. У вас: ${bank.score:,} { emojies.dollar_banknote }',
             keyboard=keyboards['bank'],
-            clear_state=True,
         )
+        await clear_current_state(m)
         return
     # update
     await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + int(amount) })
@@ -207,16 +208,16 @@ async def state_bank_transfer_state(m: Message):
             m=m,
             text=f'{ emojies.sparkles } { player.nickname }, Укажите игровой ID игрока как целое число',
             keyboard=keyboards['bank'],
-            clear_state=True,
         )
+        await clear_current_state(m)
         return
     if not isNumber(recipient_id):
         await error_message(
             m=m,
             text=f'{ emojies.sparkles } { player.nickname }, Укажите сумму перевода как целое число',
             keyboard=keyboards['bank'],
-            clear_state=True,
         )
+        await clear_current_state(m)
         return
     
     # try find recipient
@@ -232,8 +233,8 @@ async def state_bank_transfer_state(m: Message):
             m=m,
             text=f'{ emojies.sparkles } { player.nickname }, Игрока с таким ID нет',
             keyboard=keyboards['bank'],
-            clear_state=True
         )
+        await clear_current_state(m)
         return
     
     # check sender bank score
@@ -243,8 +244,8 @@ async def state_bank_transfer_state(m: Message):
             m=m,
             text=f'{ emojies.sparkles } { player.nickname }, Недостаточно средств. Ваш счет: ${int(amount):,} {emojies.dollar_banknote}',
             keyboard=keyboards['bank'],
-            clear_state=True,
         )
+        await clear_current_state(m)
         return
 
     # try make transfer
