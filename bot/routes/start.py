@@ -28,5 +28,11 @@ async def start(m: Message):
 async def show_general(m: Message):
     player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
     text = f'{ emojies.alien_monster } { player.nickname }, Основное:'
-    keyboard = keyboards['general']
-    await m.answer(message=text, keyboard=keyboard)
+    await m.answer(message=text, keyboard=keyboards['general'])
+
+
+@bl.message(PayloadContainsRule({ 'action_type': 'button', 'action': 'show_games' }))
+async def show_games(m: Message):
+    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    text = f'{ emojies.cube } { player.nickname }, Игры:'
+    await m.answer(message=text, keyboard=keyboards['games'])

@@ -1,6 +1,12 @@
-from . import z_unknown_command, start, help, profile, money, bank, cases, business, job, energy
+from . import start, z_unknown_command
+from .general import help, profile, money, bank, cases, business, job, energy
+from .games import cube, cup, casino
 
 labelers = [
+    casino.bl,
+    cube.bl,
+    cup.bl,
+
     start.bl,
     help.bl,
     profile.bl,
@@ -10,5 +16,6 @@ labelers = [
     business.bl,
     job.bl,
     energy.bl,
+
     z_unknown_command.bl,
 ]

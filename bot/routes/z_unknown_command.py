@@ -2,7 +2,7 @@
 from vkbottle.bot import BotLabeler, Message
 from fuzzywuzzy import fuzz
 from emojies import emojies
-from .help import game_commands
+from .general.help import game_commands
 from database.entities import PlayerEntity
 from database.repository import Repository
 
