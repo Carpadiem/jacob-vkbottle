@@ -14,11 +14,8 @@ from emojies import emojies
 from templates import templates
 # keyboard
 from keyboards import keyboards
-# game data
-from constants import game_cases
 # tools
 from tools import error_message
-from utils.log import Log
 from utils.ts_now import ts_now
 # constants
 from constants import game_businesses

@@ -1,4 +1,4 @@
-from . import jobs, start, general, bank, business, games
+from . import jobs, start, general, bank, business, games, misc
 
 keyboards = {
     'start': start.keyboard,
@@ -16,4 +16,6 @@ keyboards = {
     'game_cube': games.keyboard_game_cube,
     'game_cup': games.keyboard_game_cup,
     'game_casino': games.keyboard_game_casino,
+
+    'misc': misc.keyboard,
 }

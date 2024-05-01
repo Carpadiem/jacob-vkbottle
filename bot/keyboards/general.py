@@ -1,5 +1,3 @@
-# general.py
-
 from vkbottle import Keyboard, Text, KeyboardButtonColor
 from emojies import emojies
 
