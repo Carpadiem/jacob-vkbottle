@@ -83,6 +83,7 @@ class emojies:
     male = '\U00002642\U0000fe0f'
     female = '\U00002640\U0000fe0f'
     printer = '\U0001f5a8\U0000fe0f'
+    info = '\U00002139\U0000fe0f'
 
     numbers = {
             1: '\U00000031\U0000fe0f\U000020e3',

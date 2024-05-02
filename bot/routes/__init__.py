@@ -1,11 +1,13 @@
 from . import start, z_unknown_command
 from .general import help, profile, money, bank, cases, business, job, energy
 from .games import cube, cup, casino
-from .misc import picture
+from .misc import picture, donate, report
 
 labelers = [
 
     picture.bl,
+    donate.bl,
+    report.bl,
 
     casino.bl,
     cube.bl,
