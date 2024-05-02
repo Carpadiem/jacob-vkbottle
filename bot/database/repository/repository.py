@@ -1,12 +1,14 @@
 from mysql.connector.aio import connect as mysql_connect
 from models.entity import Entity
 from utils.log import Log
+# config
+import config
 
 connection_config = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'root123',
-    'database': 'jacob_db',
+    'host': config.DB_HOST,
+    'user': config.DB_USER,
+    'password': config.DB_PASSWORD,
+    'database': config.DB_DATABASE,
 }
 
 class Repository:
