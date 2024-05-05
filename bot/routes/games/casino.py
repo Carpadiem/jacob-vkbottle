@@ -18,7 +18,7 @@ from tools import error_message, clear_current_state
 # states
 from config_states import my_state_dispenser
 # utils
-from utils.isNumber import isNumber
+from bot.utils.is_number import is_number
 from utils.log import Log
 
 # create labeler
@@ -81,7 +81,7 @@ async def state_bet_state(m: Message):
         casino_bet = payload['casino_bet']
     else:
         # validation text-input
-        if not isNumber(m.text):
+        if not is_number(m.text):
             # error
             text = f'{ emojies.sparkles } { player.nickname }, Введите целое число, чтобы сделать ставку'
             await error_message(

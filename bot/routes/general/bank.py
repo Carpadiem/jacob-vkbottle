@@ -16,7 +16,7 @@ from emojies import emojies
 # from ..bot import my_state_dispenser
 from config_states import my_state_dispenser
 # utils
-from utils.isNumber import isNumber
+from bot.utils.is_number import is_number
 from utils.log import Log
 # tools
 from tools import error_message, clear_current_state
@@ -101,7 +101,7 @@ async def state_bank_push_state(m: Message):
     player: PlayerEntity = payload['player']
     # args validation
     amount = m.text
-    if not isNumber(amount):
+    if not is_number(amount):
         # error message
         await error_message(m=m, text=f'{ emojies.sparkles } { player.nickname }, Укажите целое число', keyboard=keyboards['bank'])
         await clear_current_state(m)
@@ -151,7 +151,7 @@ async def state_bank_pull_state(m: Message):
     player: PlayerEntity = payload['player']
     # args validation
     amount = m.text
-    if not isNumber(amount):
+    if not is_number(amount):
         # error message
         await error_message(m=m, text=f'{ emojies.sparkles } { player.nickname }, Укажите целое число', keyboard=keyboards['bank'], clear_state=True)
         return
@@ -203,7 +203,7 @@ async def state_bank_transfer_state(m: Message):
     recipient_id = args[0]
     amount = args[1]
     # validation
-    if not isNumber(recipient_id):
+    if not is_number(recipient_id):
         await error_message(
             m=m,
             text=f'{ emojies.sparkles } { player.nickname }, Укажите игровой ID игрока как целое число',
@@ -211,7 +211,7 @@ async def state_bank_transfer_state(m: Message):
         )
         await clear_current_state(m)
         return
-    if not isNumber(recipient_id):
+    if not is_number(recipient_id):
         await error_message(
             m=m,
             text=f'{ emojies.sparkles } { player.nickname }, Укажите сумму перевода как целое число',

@@ -1,4 +1,4 @@
-def isSubset(a: list, b: list):
+def is_subset(a: list, b: list):
     for aitem in a:
         for bitem in b:
             if aitem in b:

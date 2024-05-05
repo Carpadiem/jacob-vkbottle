@@ -1,5 +1,3 @@
-from .payloadContainsOrNotRule import PayloadContainsOrNotRule as payloadContainsOrNotRule
-from .payloadContainsOrTextRule import PayloadContainsOrTextRule as payloadContainsOrTextRule
+from .payload_contains_or_text_rule import PayloadContainsOrTextRule as payload_contains_or_text_rule
 
-PayloadContainsOrNotRule = payloadContainsOrNotRule
-PayloadContainsOrTextRule = payloadContainsOrTextRule
+PayloadContainsOrTextRule = payload_contains_or_text_rule

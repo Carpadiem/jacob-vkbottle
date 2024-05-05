@@ -59,7 +59,11 @@ class emojies:
     like = '\U0001f44d'
     dislike = '\U0001f44e'
     target = '\U0001f3af'
+    television = '\U0001f4fa'
+    cyclone = '\U0001f300'
+    mans_shoe = '\U0001f45e'
 
+    shopping_bags = '\U0001f6cd\U0000fe0f'
     checkbox = '\U00002611\U0000fe0f'
     bellhop_bell = '\U0001f6ce\U0000fe0f'
     bank = '\U0001f3db\U0000fe0f'

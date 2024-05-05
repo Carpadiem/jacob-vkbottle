@@ -1,6 +1,5 @@
-from typing import Union, List
+from typing import List
 from vkbottle.dispatch.rules.base import BaseMessageMin, ABCRule, PayloadContainsRule
-from utils.isSubset import isSubset
 
 class PayloadContainsOrTextRule(ABCRule[BaseMessageMin]):
     def __init__(self, payload: dict, text: str | List[str]):
@@ -18,5 +17,3 @@ class PayloadContainsOrTextRule(ABCRule[BaseMessageMin]):
             isText = event.text.lower() in [x.lower() for x in self.text]
 
         return isPayloadContains or isText
-
-        # return await PayloadContainsRule(self.payload).check(event) or event.text.lower() == self.text.lower()

@@ -1,5 +1,5 @@
 from . import start, z_unknown_command
-from .general import help, profile, money, bank, cases, business, job, energy
+from .general import help, profile, money, bank, cases, business, job, energy, property
 from .games import cube, cup, casino
 from .misc import picture, donate, report
 
@@ -22,6 +22,7 @@ labelers = [
     business.bl,
     job.bl,
     energy.bl,
+    property.bl,
 
     z_unknown_command.bl,
 ]
