@@ -4,7 +4,7 @@ from vkbottle.bot import BotLabeler, Message
 from vkbottle.dispatch.rules.base import PayloadContainsRule
 from vkbottle import GroupEventType
 from vkbottle.bot import MessageEvent
-from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback, ShowSnackbarEvent
+from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback
 # database
 from database.repository import Repository
 from database.entities import PlayerEntity, PropertyEntity
@@ -17,7 +17,7 @@ from keyboards import keyboards
 # utils
 from utils.find_dict_in_list_by_prop import find_dict_in_list_by_prop
 # tools
-from tools import error_message, raw_event_error_message
+from tools import raw_event_error_message
 
 # create labeler
 bl = BotLabeler()

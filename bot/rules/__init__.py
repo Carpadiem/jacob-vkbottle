@@ -1,3 +1,5 @@
 from .payload_contains_or_text_rule import PayloadContainsOrTextRule as payload_contains_or_text_rule
+from .role_rule import RoleRule as role_rule
 
 PayloadContainsOrTextRule = payload_contains_or_text_rule
+RoleRule = role_rule

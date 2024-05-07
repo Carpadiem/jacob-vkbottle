@@ -18,7 +18,8 @@ from tools import error_message, clear_current_state
 # states
 from config_states import my_state_dispenser
 # utils
-from bot.utils.is_number import is_number
+# from bot.utils.is_number import is_number
+from utils.is_number import is_number
 from utils.log import Log
 
 # create labeler
@@ -119,8 +120,11 @@ async def state_bet_state(m: Message):
             return
         else:
             # generate coefficient
-            weights = [2, 20, 20, 5, 20, 20, 2]
-            gen_coef = choices([0, .25, .5, 1, 2, 1.25, 5], weights=weights)[0]
+            # weights = [2, 20, 20, 5, 20, 20, 2]
+            # gen_coef = choices([0, .25, .5, 1, 2, 1.25, 5], weights=weights)[0]
+            coefs__ = [0, 5, 1,       .5, 2,       0.25, .75,  1.25,  1.75]
+            weights = [2, 2, 10,      20, 20,      15,   15,   15,    15]
+            gen_coef = choices(coefs__, weights=weights)[0]
             Log(f'gen_coef: {gen_coef}')
             # calculate result
             bet_multiply_on_coef: float = bet * gen_coef

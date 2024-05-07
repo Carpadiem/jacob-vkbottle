@@ -16,7 +16,8 @@ from emojies import emojies
 # from ..bot import my_state_dispenser
 from config_states import my_state_dispenser
 # utils
-from bot.utils.is_number import is_number
+# from bot.utils.is_number import is_number
+from utils.is_number import is_number
 from utils.log import Log
 # tools
 from tools import error_message, clear_current_state
