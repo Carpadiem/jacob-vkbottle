@@ -207,20 +207,12 @@ async def state_bank_transfer_state(m: Message):
     amount = args[1]
     # validation
     if not is_number(recipient_id):
-        await error_message(
-            m=m,
-            text=f'{ emojies.sparkles } { player.nickname }, Укажите игровой ID игрока как целое число',
-            keyboard=keyboards['bank'],
-        )
-        await clear_current_state(m)
+        text = f'{ emojies.sparkles } { player.nickname }, Укажите игровой ID игрока как целое число'
+        await error_message(m, text)
         return
-    if not is_number(recipient_id):
-        await error_message(
-            m=m,
-            text=f'{ emojies.sparkles } { player.nickname }, Укажите сумму перевода как целое число',
-            keyboard=keyboards['bank'],
-        )
-        await clear_current_state(m)
+    if not is_number(amount):
+        text = f'{ emojies.sparkles } { player.nickname }, Укажите сумму перевода как целое число',
+        await error_message(m, text)
         return
     
     # try find recipient
@@ -232,12 +224,8 @@ async def state_bank_transfer_state(m: Message):
     # try find recipient from db
     recipient_bank: BankEntity = await bankRepo.find_one_by({ 'player_id': recipient_id })
     if recipient_bank == None:
-        await error_message(
-            m=m,
-            text=f'{ emojies.sparkles } { player.nickname }, Игрока с таким ID нет',
-            keyboard=keyboards['bank'],
-        )
-        await clear_current_state(m)
+        text=f'{ emojies.sparkles } { player.nickname }, Игрока с таким ID нет'
+        await error_message(m, text)
         return
     
     # check sender bank score
@@ -245,7 +233,21 @@ async def state_bank_transfer_state(m: Message):
     if sender_bank.score < int(amount):
         await error_message(
             m=m,
-            text=f'{ emojies.sparkles } { player.nickname }, Недостаточно средств. Ваш счет: ${int(amount):,} {emojies.dollar_banknote}',
+            text=f'{ emojies.sparkles } { player.nickname }, Недостаточно средств. Ваш счет: ${int(sender_bank.score):,} {emojies.dollar_banknote}',
+            keyboard=keyboards['bank'],
+        )
+        await clear_current_state(m)
+        return
+
+    # check sender bank transfers
+    if sender_bank.transfers <= 0:
+        text = f'''{ emojies.sparkles } { player.nickname }, Вы израсходовали все свои переводы на сегодня ({sender_bank.transfers_limit} шт.)
+
+        { emojies.tip } Дождитесь следующего дня, для восполнения переводов
+        '''.replace('    ', '')
+        await error_message(
+            m=m,
+            text=text,
             keyboard=keyboards['bank'],
         )
         await clear_current_state(m)
@@ -255,10 +257,16 @@ async def state_bank_transfer_state(m: Message):
     await bankRepo.update({ 'user_id': m.from_id }, { 'score': sender_bank.score - int(amount) }) # sender bank.score update
     await bankRepo.update({ 'player_id': recipient_id }, { 'score': recipient_bank.score + int(amount) }) # recipient bank.score update
 
+    # update transfers
+    await bankRepo.update({ 'user_id': m.from_id }, { 'transfers': sender_bank.transfers - 1 })
+
     # answer
     recipient: PlayerEntity = await playerRepo.find_one_by({ 'player_id': recipient_id })
     # answer sender
-    text = f'{ emojies.checkmark } { player.nickname }, Успешный перевод ${int(amount):,} { emojies.dollar_banknote} игроку @id{recipient.user_id}({ recipient.nickname })'
+    text = f'''{ emojies.checkmark } { player.nickname }, Успешный перевод ${int(amount):,} { emojies.dollar_banknote} игроку @id{recipient.user_id}({ recipient.nickname })
+
+    { emojies.tip } У вас осталось переводов: { sender_bank.transfers - 1 }/{ sender_bank.transfers_limit }
+    '''.replace('    ', '')
     await m.answer(message=text, keyboard=keyboards['bank'])
     # answer recipient
     text = f'{ emojies.bank } { recipient.nickname }, Входящий перевод ${int(amount):,} { emojies.dollar_banknote} от @id{player.user_id}({ player.nickname })'

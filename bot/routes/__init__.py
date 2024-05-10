@@ -12,6 +12,8 @@ from .admin.routes.player import (
 from .admin.routes.bank import (
     score_limit as acs_score_limit,
     score as acs_score,
+    transfers as acs_transfers,
+    transfers_limit as acs_transfers_limit
 )
 
 labelers = [
@@ -45,6 +47,8 @@ labelers = [
     # bank
     acs_score_limit.bl,
     acs_score.bl,
+    acs_transfers.bl,
+    acs_transfers_limit.bl,
     
     # unknown command
     z_unknown_command.bl,

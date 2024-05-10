@@ -23,23 +23,23 @@ bankRepo = Repository(entity=BankEntity())
 
 # handlers
 
-# ---------------------------------------- BANK SCORE LIMIT GET ----------------------------------------
+# ---------------------------------------- BANK TRANSFERS GET ----------------------------------------
 
 @bl.message(
     RoleRule(['founder', 'owner', 'administrator']),
     text=[
-        '/bank score limit get <pid>',
-        '/bank score limit get',
-        '/bsl g <pid>',
-        '/bsl g',
+        '/bank transfers get <pid>',
+        '/bank transfers get',
+        '/bt g <pid>',
+        '/bt g',
     ]
 )
-async def bank_score_limit_get(m: Message, pid=None):
+async def bank_transfers_get(m: Message, pid=None):
     # entities
     player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
-        await acs_usage_error(m, 'bank_score_limit_get')
+        await acs_usage_error(m, 'bank_transfers_get')
         return
     # get recipient bank
     recipient_bank: BankEntity = await bankRepo.find_one_by({ 'player_id': int(pid) })
@@ -48,7 +48,7 @@ async def bank_score_limit_get(m: Message, pid=None):
         return
     # acs answer
     acs_response = f'''Полученные данные:
-    -- Лимит банковского счета @id{recipient_bank.user_id}(игрока): ${recipient_bank.score_limit:,} { emojies.dollar_banknote }
+    -- Текущее количество переводов в банке у @id{recipient_bank.user_id}(игрока): { recipient_bank.transfers }
     '''.replace('    ', '')
     await acs_success(m, acs_response)
 
@@ -59,44 +59,47 @@ async def bank_score_limit_get(m: Message, pid=None):
 
 
 
-# ---------------------------------------- BANK SCORE LIMIT SET ----------------------------------------
+# ---------------------------------------- BANK TRANSFERS SET ----------------------------------------
 
 @bl.message(
     RoleRule(['founder', 'owner', 'administrator']),
     text=[
-        '/bank score limit set <pid> <value>',
-        '/bank score limit set <pid>',
-        '/bank score limit set',
-        '/bsl s <pid> <value>',
-        '/bsl s <pid>',
-        '/bsl s',
+        '/bank transfers set <pid> <value>',
+        '/bank transfers set <pid>',
+        '/bank transfers set',
+        '/bt s <pid> <value>',
+        '/bt s <pid>',
+        '/bt s',
     ]
 )
-async def bank_score_limit_set(m: Message, pid=None, value=None):
+async def bank_transfers_set(m: Message, pid=None, value=None):
     # entites
     player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
-        await acs_usage_error(m, 'bank_score_limit_set')
+        await acs_usage_error(m, 'bank_transfers_set')
         return
     if not is_number(value):
-        await acs_usage_error(m, 'bank_score_limit_set')
+        await acs_usage_error(m, 'bank_transfers_set')
         return
     # get recipient
     recipient_bank: BankEntity = await bankRepo.find_one_by({ 'player_id': int(pid) })
     if recipient_bank == None:
         await acs_player_not_found(m)
         return
-    
-    # check if value > zero
-    if int(value) < 0:
-        await acs_error(m, 'Значение должно быть больше 0')
+
+    # check value > recipient_bank.transfers_limit OR value < 0
+    if int(value) > recipient_bank.transfers_limit or int(value) < 0:
+        text = f'''Лимит переводов у этого @id{recipient_bank.user_id}(игрока): { recipient_bank.transfers_limit } шт.
+
+        Вы не можете установить значение больше лимита или меньше 0
+        '''.replace('    ', '')
+        await acs_error(m, text)
         return
 
     # updates
-    # set bank score limit
-    await bankRepo.update({ 'player_id': int(pid) }, { 'score_limit': int(value) })
+    await bankRepo.update({ 'player_id': int(pid) }, { 'transfers': int(value) })
     
     # acs answer
-    acs_response = f'-- Новый лимит счета банка для @id{recipient_bank.user_id}(игрока): ${int(value):,}'
+    acs_response = f'-- Новое количество переводов для @id{recipient_bank.user_id}(игрока): { int(value) }'
     await acs_success(m, acs_response)
