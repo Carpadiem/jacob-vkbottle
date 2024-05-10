@@ -6,6 +6,7 @@ class BankEntity(Entity):
             player_id=0,
             user_id=0,
             score=0,
+            score_limit=0,
             transfers_left=0,
             transfers_limit=0,
             ts_previous_transfer=0,
@@ -14,6 +15,7 @@ class BankEntity(Entity):
         self.player_id: int = player_id
         self.user_id: int = user_id
         self.score: int = score
+        self.score_limit: int = score_limit
         self.transfers_left: int = transfers_left
         self.transfers_limit: int = transfers_limit
         self.ts_previous_transfer: int = ts_previous_transfer

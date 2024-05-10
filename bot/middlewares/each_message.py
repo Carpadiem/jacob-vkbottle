@@ -63,6 +63,7 @@ class EachMessage(BaseMiddleware[Message]):
             player_id=player_id,
             user_id=sender_id,
             score=0,
+            score_limit=5_000_000,
             transfers_left=20,
             transfers_limit=20,
             ts_previous_transfer=ts_now,

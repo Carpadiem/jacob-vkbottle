@@ -103,21 +103,23 @@ async def state_bank_push_state(m: Message):
     # args validation
     amount = m.text
     if not is_number(amount):
-        # error message
-        await error_message(m=m, text=f'{ emojies.sparkles } { player.nickname }, Укажите целое число', keyboard=keyboards['bank'])
-        await clear_current_state(m)
+        text = f'{ emojies.sparkles } { player.nickname }, Укажите целое число'
+        await error_message(m, text)
         return
     # update bank score
     bank: BankEntity = await bankRepo.find_one_by({ 'user_id': m.from_id })
     if player.money < int(amount): # check player money
-        # error message
-        await error_message(
-            m=m,
-            text=f'{ emojies.sparkles } { player.nickname }, Не хватает денег. У вас: ${ player.money:, } { emojies.dollar_banknote }',
-            keyboard=keyboards['bank'],
-        )
-        await clear_current_state(m)
+        text = f'{ emojies.sparkles } { player.nickname }, Не хватает денег. У вас: ${player.money:,} { emojies.dollar_banknote }'
+        await error_message(m, text)
         return
+    
+    # check if amount < score_limit?
+    bank = await bankRepo.find_one_by({ 'user_id': m.from_id })
+    if bank.score + int(amount) > bank.score_limit:
+        text = f'{ emojies.sparkles } { player.nickname }, Вы превышаете свой лимит хранения денег в банке (${bank.score_limit:,})'
+        await error_message(m, text)
+        return
+
     # update
     await bankRepo.update({ 'user_id': m.from_id }, { 'score': bank.score + int(amount) })
     await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money - int(amount) })
