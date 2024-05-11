@@ -1,4 +1,16 @@
-from . import jobs, start, general, bank, business, games, misc, donate, property
+from . import (
+    jobs,
+    start,
+    general,
+    bank,
+    business,
+    games,
+    misc,
+    donate,
+    property,
+    motor_transport_start,
+    autosalone_pages_inline
+)
 
 keyboards = {
     'start': start.keyboard,
@@ -23,4 +35,7 @@ keyboards = {
 
     'goto_property_shop': property.goto_property_shop,
     'property_shop': property.property_shop,
+
+    'motor_transport_start': motor_transport_start.keyboard,
+    'autosalone_pages_inline': autosalone_pages_inline.func,
 }

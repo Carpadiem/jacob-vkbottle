@@ -18,16 +18,16 @@ game_commands = {
         'category_commands': [
             { 'command_text': 'Профиль', 'command_emoji': emojies.ledger },
             { 'command_text': 'Деньги', 'command_emoji': emojies.dollar_banknote },
-            { 'command_text': 'Ресурсы', 'command_emoji': emojies.wood },
+            # { 'command_text': 'Ресурсы', 'command_emoji': emojies.wood },
             { 'command_text': 'Энергия', 'command_emoji': emojies.high_voltage },
             { 'command_text': 'Банк', 'command_emoji': emojies.bank },
             { 'command_text': 'Бизнес', 'command_emoji': emojies.briefcase },
-            { 'command_text': 'Опыт/Уровень', 'command_emoji': emojies.trophy },
+            # { 'command_text': 'Опыт/Уровень', 'command_emoji': emojies.trophy },
             { 'command_text': 'Работа', 'command_emoji': emojies.desktop },
-            { 'command_text': 'Инвентарь', 'command_emoji': emojies.backpack },
-            { 'command_text': 'Питомец', 'command_emoji': emojies.fox },
+            # { 'command_text': 'Инвентарь', 'command_emoji': emojies.backpack },
+            # { 'command_text': 'Питомец', 'command_emoji': emojies.fox },
             { 'command_text': 'Кейсы', 'command_emoji': emojies.package },
-            { 'command_text': 'Достижения', 'command_emoji': emojies.trophy },
+            # { 'command_text': 'Достижения', 'command_emoji': emojies.trophy },
         ]
     },
     # category
@@ -46,33 +46,33 @@ game_commands = {
         'category_emoji': emojies.mount,
         'category_commands': [
             { 'command_text': 'Пикча', 'command_emoji': emojies.mount },
-            { 'command_text': 'Реф (реферальная система)', 'command_emoji': emojies.ballot_box },
-            { 'command_text': 'Промо', 'command_emoji': emojies.red_envelope },
+            # { 'command_text': 'Реф (реферальная система)', 'command_emoji': emojies.ballot_box },
+            # { 'command_text': 'Промо', 'command_emoji': emojies.red_envelope },
             { 'command_text': 'Донат', 'command_emoji': emojies.gem_stone },
             { 'command_text': 'Репорт', 'command_emoji': emojies.red_triangle },
-            { 'command_text': 'Паспорт', 'command_emoji': emojies.identification_card },
-            { 'command_text': 'Тоталы', 'command_emoji': emojies.printer },
+            # { 'command_text': 'Паспорт', 'command_emoji': emojies.identification_card },
+            # { 'command_text': 'Тоталы', 'command_emoji': emojies.printer },
         ]
     },
     # category
-    'mtaresources': {
-        'category_text': 'MTA',
-        'category_emoji': emojies.video_game,
-        'category_commands': [
-            { 'command_text': 'mtaevent', 'command_emoji': emojies.video_game },
-            { 'command_text': 'supermta', 'command_emoji': emojies.video_game },
-            { 'command_text': 'mtareceived', 'command_emoji': emojies.scroll },
-        ]
-    },
-    # category
-    'pockets': {
-        'category_text': 'Карманы',
-        'category_emoji': emojies.phone,
-        'category_commands': [
-            { 'command_text': 'Телефон', 'command_emoji': emojies.phone },
-            { 'command_text': 'Лептоп', 'command_emoji': emojies.laptop },
-        ]
-    },
+    # 'mtaresources': {
+    #     'category_text': 'MTA',
+    #     'category_emoji': emojies.video_game,
+    #     'category_commands': [
+    #         { 'command_text': 'mtaevent', 'command_emoji': emojies.video_game },
+    #         { 'command_text': 'supermta', 'command_emoji': emojies.video_game },
+    #         { 'command_text': 'mtareceived', 'command_emoji': emojies.scroll },
+    #     ]
+    # },
+    # # category
+    # 'pockets': {
+    #     'category_text': 'Карманы',
+    #     'category_emoji': emojies.phone,
+    #     'category_commands': [
+    #         { 'command_text': 'Телефон', 'command_emoji': emojies.phone },
+    #         { 'command_text': 'Лептоп', 'command_emoji': emojies.laptop },
+    #     ]
+    # },
 }
 
 # handlers

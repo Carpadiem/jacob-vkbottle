@@ -29,7 +29,7 @@ playerRepo = Repository(entity=PlayerEntity())
 energyRepo = Repository(entity=EnergyEntity())
 
 # handlers
-@bl.message(PayloadContainsRule({ 'action_type': 'button', 'action': 'show_jobs' }))
+@bl.message(PayloadContainsOrTextRule(payload={ 'action_type': 'button', 'action': 'show_jobs' }, text=['работа', 'работать']))
 async def show_job(m: Message):
     # entities
     player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })

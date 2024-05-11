@@ -2,8 +2,8 @@
 from random import randint
 # vkbottle
 from vkbottle.bot import BotLabeler, Message
-from vkbottle import PhotoMessageUploader
 from vkbottle.dispatch.rules.base import PayloadContainsRule
+from rules import PayloadContainsOrTextRule
 from keyboards import keyboards
 from emojies import emojies
 from database.repository import Repository
@@ -18,7 +18,7 @@ playerRepo = Repository(entity=PlayerEntity())
 
 
 # handlers
-@bl.message(PayloadContainsRule({ 'action_type': 'button', 'action': 'donate' }))
+@bl.message(PayloadContainsOrTextRule(payload={ 'action_type': 'button', 'action': 'donate' }, text=['донат']))
 async def donate(m: Message):
     player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
     # answer

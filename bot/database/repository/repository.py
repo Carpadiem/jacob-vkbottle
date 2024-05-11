@@ -1,4 +1,5 @@
 from mysql.connector.aio import connect as mysql_connect
+import mysql.connector
 from models.entity import Entity
 from utils.log import Log
 # config
@@ -18,7 +19,7 @@ class Repository:
     async def connect(self):
         try:
             self.connection = await mysql_connect(**connection_config)
-            self.cursor = await self.connection.cursor(buffered=True, dictionary=True)
+            self.cursor = await self.connection.cursor(buffered=False, dictionary=True)
         except Exception as e:
             Log(f'[exception][repository.py / def connect]: {e}')
 

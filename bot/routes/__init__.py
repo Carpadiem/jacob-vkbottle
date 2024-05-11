@@ -2,6 +2,7 @@ from . import start, z_unknown_command
 from .general import help, profile, money, bank, cases, business, job, energy, property
 from .games import cube, cup, casino
 from .misc import picture, donate, report
+from .motor_transport import motor_transport, autosalone
 
 from .admin.routes.player import (
     role as acs_role,
@@ -28,16 +29,24 @@ from .admin.routes.misc import (
 )
 
 labelers = [
+
+    # motor_transport
+    motor_transport.bl,
+    autosalone.bl,
+
     # start
     start.bl,
+
     # misc
     picture.bl,
     donate.bl,
     report.bl,
+    
     # games
     casino.bl,
     cube.bl,
     cup.bl,
+    
     # general
     help.bl,
     profile.bl,
@@ -68,7 +77,7 @@ labelers = [
     # misc
     acs_profile.bl,
     acs_messages.bl,
-    
+
     # unknown command
     z_unknown_command.bl,
 ]

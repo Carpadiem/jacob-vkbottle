@@ -59,6 +59,9 @@ async def money(m: Message):
     { emojies.down_arrow } Пополнить: Банк пополнить
     { emojies.up_arrow } Пополнить: Банк снять
     { emojies.money_wings } Перевести игроку: Банк перевод
+
+    { emojies.tip } Ваш лимит хранения: ${bank.score_limit:,} { emojies.dollar_banknote }
+    { emojies.tip } Переводов осталось: { bank.transfers }/{ bank.transfers_limit }
     '''.replace('    ', '')
     await m.answer(message=text, keyboard=keyboard)
 

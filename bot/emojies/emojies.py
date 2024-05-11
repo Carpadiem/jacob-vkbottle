@@ -80,6 +80,8 @@ class emojies:
     play_button = '\U000025b6\U0000fe0f'
     down_arrow = '\U00002b07\U0000fe0f'
     up_arrow = '\U00002b06\U0000fe0f'
+    left_arrow = '\U00002b05\U0000fe0f'
+    right_arrow = '\U000027a1\U0000fe0f'
     abc_button = '\U0001f524'
     next_track = '\U000023ed\U0000fe0f'
     pick = '\U000026cf\U0000fe0f'
