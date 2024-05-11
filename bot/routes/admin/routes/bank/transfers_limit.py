@@ -88,9 +88,8 @@ async def bank_transfers_limit_set(m: Message, pid=None, value=None):
         await acs_player_not_found(m)
         return
 
-    # check value > recipient_bank.transfers_limit OR value < 0
     if int(value) < 0:
-        await acs_error(m, 'Вы не можете установить значение меньше 0')
+        await acs_error(m, 'Значение должно быть больше 0')
         return
 
     # updates

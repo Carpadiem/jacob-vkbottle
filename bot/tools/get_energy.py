@@ -21,7 +21,7 @@ async def get_energy(user_id: int):
     # ts as mins
     ts_now_as_mins = round(ts_now() / 60)
     ts_previous_use_as_mins = round(ts_previous_use / 60)
-    # ccalculate energy
+    # calculate energy
     accumulated_energy = (ts_now_as_mins - ts_previous_use_as_mins) / ENERGY_RECOVERY_TIME_IN_MINUTES
     current_energy = energy.energy
     return round(current_energy + accumulated_energy)

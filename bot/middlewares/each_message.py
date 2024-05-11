@@ -98,6 +98,7 @@ class EachMessage(BaseMiddleware[Message]):
             player_id=player_id,
             user_id=sender_id,
             energy=20,
+            energy_limit=20,
             ts_previous_use=ts_now,
         )
         try: await energyRepo.save(energyEntity)

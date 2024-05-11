@@ -113,7 +113,7 @@ async def bank_score_add(m: Message, pid=None, amount=None):
 
 
 
-# ---------------------------------------- BANK SCORE ADD ----------------------------------------
+# ---------------------------------------- BANK SCORE REDUCE ----------------------------------------
 
 @bl.message(
     RoleRule(['founder', 'owner', 'administrator']),

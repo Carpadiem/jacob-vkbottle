@@ -15,6 +15,10 @@ from .admin.routes.bank import (
     transfers as acs_transfers,
     transfers_limit as acs_transfers_limit
 )
+from .admin.routes.energy import (
+    energy as acs_energy,
+    energy_limit as acs_energy_limit,
+)
 
 labelers = [
     # start
@@ -49,6 +53,9 @@ labelers = [
     acs_score.bl,
     acs_transfers.bl,
     acs_transfers_limit.bl,
+    # energy
+    acs_energy.bl,
+    acs_energy_limit.bl,
     
     # unknown command
     z_unknown_command.bl,

@@ -8,8 +8,6 @@ from database.entities import PlayerEntity, EnergyEntity
 from database.repository import Repository
 # emojies
 from emojies import emojies
-# const
-from constants import max_player_energy as MAX_PLAYER_ENERGY
 # tools
 from tools import get_energy
 
@@ -27,10 +25,11 @@ energyRepo = Repository(entity=EnergyEntity())
 async def energy(m: Message):
     # entites
     player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    energy: EnergyEntity = await energyRepo.find_one_by({ 'user_id': m.from_id })
     # ...
     player_energy = await get_energy(m.from_id)
-    if player_energy > MAX_PLAYER_ENERGY:
-        player_energy = MAX_PLAYER_ENERGY
+    if player_energy > energy.energy_limit:
+        player_energy = energy.energy_limit
     # answer
-    text = f'{ emojies.high_voltage } { player.nickname }, У вас {player_energy:,} энергии'
+    text = f'{ emojies.high_voltage } { player.nickname }, У вас { player_energy }/{ energy.energy_limit } энергии'
     await m.answer(text)
