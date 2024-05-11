@@ -23,7 +23,8 @@ from .admin.routes.cases import (
     case_counts as acs_cases_counts,
 )
 from .admin.routes.misc import (
-    profile as acs_profile
+    profile as acs_profile,
+    messages as acs_messages
 )
 
 labelers = [
@@ -66,6 +67,7 @@ labelers = [
     acs_cases_counts.bl,
     # misc
     acs_profile.bl,
+    acs_messages.bl,
     
     # unknown command
     z_unknown_command.bl,
