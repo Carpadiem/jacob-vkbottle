@@ -4,13 +4,12 @@ from vkbottle.bot import BotLabeler, Message
 # rules
 from rules import PayloadContainsOrTextRule
 # database
-from database.entities import PlayerEntity, EnergyEntity
+from database.entities import PlayerEntity
 from database.repository import Repository
 # emojies
 from emojies import emojies
-# utils
-from utils.ts2date import ts2date
-from tools import get_energy
+# tools
+from tools.get_player_profile_text import get_player_profile_text
 # constants
 from constants import max_player_energy as MAX_PLAYER_ENERGY
 
@@ -20,7 +19,6 @@ bl.vbml_ignore_case = True
 
 # repos
 playerRepo = Repository(entity=PlayerEntity())
-energyRepo = Repository(entity=EnergyEntity())
 
 
 # handlers
@@ -28,23 +26,12 @@ energyRepo = Repository(entity=EnergyEntity())
 async def profile(m: Message):
     # entities
     player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
-    energy: EnergyEntity = await energyRepo.find_one_by({ 'user_id': m.from_id })
-    # ...
-    registration_date = ts2date(player.ts_registration)
-    player_energy = await get_energy(m.from_id)
 
-    if player_energy > energy.energy_limit:
-        player_energy = energy.energy_limit
+    player_profile_lines_text = await get_player_profile_text(player.player_id)
 
     text = f'''{ emojies.ledger } { player.nickname }, Ваш профиль:
 
-    { emojies.symbol_id } Игровой ID: { player.player_id }
-    { emojies.scroll } Никнейм: { player.nickname }
-    { emojies.dollar_banknote } Деньги: {player.money:,}$
-    { emojies.high_voltage } Энергия: { player_energy }/{ energy.energy_limit }
-    { emojies.trophy } Опыт: { player.experience }
-    { emojies.coin } Донат валюта: { player.special_currency }
-    { emojies.watch } Дата регистрации: { registration_date }
+    {player_profile_lines_text}
     '''.replace('    ', '')
 
     await m.answer(text)

@@ -40,6 +40,8 @@ async def cases_shop(m: Message):
     await m.answer(message=text, template=template)
 
 
+
+
 @bl.message(PayloadContainsRule({ 'action_type': 'button', 'action': 'buy_case' }))
 async def buy_case(m: Message):
     
@@ -65,6 +67,8 @@ async def buy_case(m: Message):
     { emojies.package } { player.nickname }, Успешная покупка x1 { game_cases[case_id]["name"] }!
     '''.replace('    ', '')
     await m.answer(text)
+
+
 
 
 @bl.message(PayloadContainsRule({ 'action_type': 'button', 'action': 'open_case' }))

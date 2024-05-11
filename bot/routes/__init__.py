@@ -19,6 +19,12 @@ from .admin.routes.energy import (
     energy as acs_energy,
     energy_limit as acs_energy_limit,
 )
+from .admin.routes.cases import (
+    case_counts as acs_cases_counts,
+)
+from .admin.routes.misc import (
+    profile as acs_profile
+)
 
 labelers = [
     # start
@@ -56,6 +62,10 @@ labelers = [
     # energy
     acs_energy.bl,
     acs_energy_limit.bl,
+    # cases
+    acs_cases_counts.bl,
+    # misc
+    acs_profile.bl,
     
     # unknown command
     z_unknown_command.bl,
