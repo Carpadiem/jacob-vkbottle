@@ -6,7 +6,16 @@ from vkbottle.bot import Message
 from vkbottle import BaseMiddleware
 # database
 from database.repository import Repository
-from database.entities import PlayerEntity, BankEntity, CasesEntity, BusinessEntity, EnergyEntity, PropertyEntity
+from database.entities import (
+    PlayerEntity,
+    BankEntity,
+    CasesEntity,
+    BusinessEntity,
+    EnergyEntity,
+    PropertyEntity,
+    VehiclesEntity
+)
+# utils
 from utils.log import Log
 
 # init repo
@@ -16,6 +25,7 @@ casesRepo = Repository(entity=CasesEntity())
 businessRepo = Repository(entity=BusinessEntity())
 energyRepo = Repository(entity=EnergyEntity())
 propertyRepo = Repository(entity=PropertyEntity())
+vehhiclesRepo = Repository(entity=VehiclesEntity())
 
 
 class EachMessage(BaseMiddleware[Message]):
@@ -116,3 +126,12 @@ class EachMessage(BaseMiddleware[Message]):
         )
         try: await propertyRepo.save(propertyEntity)
         except Exception as e: Log(f'[exception][each_middleware / save property entity]: {e}')
+
+        # init vehicles
+        vehiclesEntity: VehiclesEntity = VehiclesEntity(
+            player_id=player_id,
+            user_id=sender_id,
+            vehicles='[]'
+        )
+        try: await vehhiclesRepo.save(vehiclesEntity)
+        except Exception as e: Log(f'[exception][each_middleware / save vehicles entity]: {e}')

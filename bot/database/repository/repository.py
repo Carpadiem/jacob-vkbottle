@@ -87,7 +87,7 @@ class Repository:
             field_value = list(field.values())[0]
             # open, make query, close
             await self.connect()
-            query = f'UPDATE {table_name} SET {field_key}="{field_value}" WHERE {where_key}="{where_value}"'
+            query = f"UPDATE {table_name} SET {field_key}='{field_value}' WHERE {where_key}='{where_value}'"
             await self.cursor.execute(query)
             await self.close()
         except Exception as e:

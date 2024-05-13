@@ -1,5 +1,7 @@
 # imports
 from math import ceil
+from typing import List
+import json
 # vkbottle
 from vkbottle.bot import BotLabeler, Message
 from vkbottle import GroupEventType
@@ -8,7 +10,7 @@ from vkbottle.dispatch.rules.base import PayloadContainsRule
 # rules
 from rules import PayloadContainsOrTextRule
 # database
-from database.entities import PlayerEntity
+from database.entities import PlayerEntity, VehiclesEntity
 from database.repository import Repository
 # emojies
 from emojies import emojies
@@ -19,6 +21,7 @@ from constants import game_vehicles, max_vehicles_on_page
 # utils
 from utils.log import Log
 from utils.is_number import is_number
+from utils.find_dict_in_list_by_prop import find_dict_in_list_by_prop
 # tools
 from tools import error_message
 
@@ -26,9 +29,10 @@ from tools import error_message
 bl = BotLabeler()
 bl.vbml_ignore_case = True
 
+
 # repos
 playerRepo = Repository(entity=PlayerEntity())
-
+vehiclesRepo = Repository(entity=VehiclesEntity())
 
 
 async def show_autosalone_page(message_or_event: Message | MessageEvent, page: int):
@@ -86,7 +90,7 @@ async def show_autosalone_page(message_or_event: Message | MessageEvent, page: i
 # handlers
 @bl.message(PayloadContainsOrTextRule(
     payload={ 'action_type': 'button', 'action': 'autosalone' },
-    text='автосалон <page>'
+    text='автосалон'
 ))
 async def autosalone(m: Message, page=1):
     # entities
@@ -143,11 +147,53 @@ async def autosalone_change_page(event: MessageEvent):
 
 
 @bl.message(text=[
-    'автосалон купить <vehicle_id>'
+    'автосалон купить <vehicle_id>',
     'автосалон купить'
 ])
-async def autosalon_purchase(m: Message, vehicle_id=None):
+async def autosalone_purchase(m: Message, vehicle_id=None):
 
+    # entities
+    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
 
+    # validation
+    if not is_number(vehicle_id):
+        text = f'{ emojies.sparkles } { player.nickname }, Пример использования команды: Автосалон купить [ID автомобиля: int]'
+        await error_message(m, text)
+        return
+    
+    # check if vehicle exist in autosalone
+    vehicle_for_purchase = find_dict_in_list_by_prop(game_vehicles, { 'id': int(vehicle_id) })
+    if vehicle_for_purchase == None:
+        text = f'{ emojies.sparkles } { player.nickname }, В автосалоне нет транспорта с таким ID'
+        await error_message(m, text)
+        return
+    
+    # check if player hhave money
+    vehicle_price = vehicle_for_purchase['price']
+    if player.money < vehicle_price:
+        text = f'{ emojies.sparkles } { player.nickname }, Не хватает денег. У вас ${player.money:,} { emojies.dollar_banknote }'
+        await error_message(m, text)
+        return
+        
+    # purchase vehicle & update player money
+    vehicles: VehiclesEntity = await vehiclesRepo.find_one_by({ 'user_id': m.from_id })
+    # load, update, dump
+    json_vehicles: List[dict] = json.loads(vehicles.vehicles)
+    json_vehicles.append(vehicle_for_purchase)
+    json_vehicles = json.dumps(json_vehicles)
+    # update vehicles in db
+    await vehiclesRepo.update({ 'user_id': m.from_id }, { 'vehicles': json_vehicles })
+    # update player money
+    await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money - vehicle_price })
 
-    pass
+    # answer
+    # build string vehicle name
+    vehicle_name = ''
+    vehicle_brand: str = vehicle_for_purchase['brand']
+    vehicle_model_name: str = vehicle_for_purchase['model_name']
+    vehicle_name = f'{ vehicle_brand.capitalize() } { vehicle_model_name.capitalize() }'
+    text = f'''{ emojies.car } { player.nickname }, Приобретение { vehicle_name } за ${vehicle_price:,} { emojies.dollar_banknote }
+
+    { emojies.tip } Новый транспорт ждет тебя в твоем гараже!
+    '''.replace('    ', '')
+    await m.answer(text)
