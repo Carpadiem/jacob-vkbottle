@@ -35,9 +35,9 @@ vehiclesRepo = Repository(entity=VehiclesEntity())
 
 
 
-async def get_player_vehicles(user_id: int) -> list:
+def get_player_vehicles(user_id: int) -> list:
     # entities
-    vehicles: VehiclesEntity = await vehiclesRepo.find_one_by({ 'user_id': user_id })
+    vehicles: VehiclesEntity = vehiclesRepo.find_one_by({ 'user_id': user_id })
     player_vehicles: list = json.loads(vehicles.vehicles)
     return player_vehicles
 
@@ -51,10 +51,10 @@ async def get_player_vehicles(user_id: int) -> list:
 ))
 async def garage_message(m: Message):    
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     
     # player_vehicles_list
-    player_vehicles_list = await get_player_vehicles(m.from_id)
+    player_vehicles_list = get_player_vehicles(m.from_id)
     
     # answer
     if len(player_vehicles_list) > 0:
@@ -81,7 +81,7 @@ async def garage_message(m: Message):
 )
 async def garage_select_vehicle(event: MessageEvent):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': event.user_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': event.user_id })
     # payload data
     payload = event.get_payload_json()
     garage_slot = payload['garage_slot']
@@ -122,10 +122,10 @@ async def garage_select_vehicle(event: MessageEvent):
 )
 async def back_to_garage(event: MessageEvent):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': event.user_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': event.user_id })
 
     # player_vehicles_list
-    player_vehicles_list = await get_player_vehicles(event.user_id)
+    player_vehicles_list = get_player_vehicles(event.user_id)
 
     # answer
     if len(player_vehicles_list) > 0:
@@ -144,7 +144,7 @@ async def back_to_garage(event: MessageEvent):
 @bl.message(text='гараж продать <garage_slot>')
 async def sell_vehicle(m: Message, garage_slot=None):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
 
     # validation
     if not is_number(garage_slot) or int(garage_slot) < 0:
@@ -152,7 +152,7 @@ async def sell_vehicle(m: Message, garage_slot=None):
         await error_message(m, text)
         return
 
-    player_vehicles: list = await get_player_vehicles(m.from_id)
+    player_vehicles: list = get_player_vehicles(m.from_id)
     if len(player_vehicles) <= 0:
         text = f'{ emojies.sparkles } { player.nickname }, В вашем гараже нет транспортных средств'
         await error_message(m, text)
@@ -171,14 +171,14 @@ async def sell_vehicle(m: Message, garage_slot=None):
 
     # db updates
     # update money (add)
-    await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + sell_price })
+    playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + sell_price })
 
     # update vehicles
-    vehicles: VehiclesEntity = await vehiclesRepo.find_one_by({ 'user_id': m.from_id })
+    vehicles: VehiclesEntity = vehiclesRepo.find_one_by({ 'user_id': m.from_id })
     vehicles_json: list = json.loads(vehicles.vehicles)
     vehicles_json.pop(int(garage_slot)-1)
     vehicles_dumped = json.dumps(vehicles_json)
-    await vehiclesRepo.update({ 'user_id': m.from_id }, { 'vehicles': vehicles_dumped })
+    vehiclesRepo.update({ 'user_id': m.from_id }, { 'vehicles': vehicles_dumped })
 
     # get vehicle name
     vehicle_name = str(vehicle_for_sell['brand']).capitalize() + str(vehicle_for_sell['model_name']).capitalize()

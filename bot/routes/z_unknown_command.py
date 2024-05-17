@@ -17,7 +17,7 @@ playerRepo = Repository(entity=PlayerEntity())
 @bl.message()
 async def unknown_message(m: Message):
     # user from repo
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     input_text = m.text
     matches = []
     # получение текстов игровых команд

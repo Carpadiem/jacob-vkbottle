@@ -35,7 +35,7 @@ playerRepo = Repository(entity=PlayerEntity())
 vehiclesRepo = Repository(entity=VehiclesEntity())
 
 
-async def show_autosalone_page(page: int):
+def show_autosalone_page(page: int):
     # autosalon datas
     autosalone_vehicles_count = len(game_vehicles) # autosalone_vehicles_count
     autosalone_pages_count = ceil(autosalone_vehicles_count/max_vehicles_on_page) # calculate autosalone pages count
@@ -92,9 +92,9 @@ async def show_autosalone_page(page: int):
 ))
 async def autosalone(m: Message, page=1):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # show autosalone page
-    response = await show_autosalone_page(page)
+    response = show_autosalone_page(page)
     if response == ('page_not_is_number'):
         text = f'{ emojies.sparkles } { player.nickname }, Пример использования команды: Автосалон [страница]'
         await error_message(m, text)
@@ -123,12 +123,12 @@ async def autosalone(m: Message, page=1):
 )
 async def autosalone_change_page(event: MessageEvent):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': event.user_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': event.user_id })
     # payload data
     payload = event.get_payload_json()
     page = payload['page']
     # show autosalone page
-    response = await show_autosalone_page(page)
+    response = show_autosalone_page(page)
     # answer (callback edit)
     text = f'''{ emojies.car } { player.nickname }, Автосалон:
 
@@ -151,7 +151,7 @@ async def autosalone_change_page(event: MessageEvent):
 async def autosalone_purchase(m: Message, vehicle_id=None):
 
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
 
     # validation
     if not is_number(vehicle_id):
@@ -174,7 +174,7 @@ async def autosalone_purchase(m: Message, vehicle_id=None):
         return
         
     # purchase vehicle & update player money
-    vehicles: VehiclesEntity = await vehiclesRepo.find_one_by({ 'user_id': m.from_id })
+    vehicles: VehiclesEntity = vehiclesRepo.find_one_by({ 'user_id': m.from_id })
     # load, update, dump
     json_vehicles: List[dict] = json.loads(vehicles.vehicles)
     # check Maximum garage slots
@@ -185,9 +185,9 @@ async def autosalone_purchase(m: Message, vehicle_id=None):
     json_vehicles.append(vehicle_for_purchase)
     json_vehicles = json.dumps(json_vehicles)
     # update vehicles in db
-    await vehiclesRepo.update({ 'user_id': m.from_id }, { 'vehicles': json_vehicles })
+    vehiclesRepo.update({ 'user_id': m.from_id }, { 'vehicles': json_vehicles })
     # update player money
-    await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money - vehicle_price })
+    playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money - vehicle_price })
 
     # answer
     # build string vehicle name

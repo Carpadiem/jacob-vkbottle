@@ -9,13 +9,11 @@ from utils.is_number import is_number
 from constants import game_roles
 from routes.admin.acs.output import acs_usage_error, acs_success, acs_error, acs_player_not_found
 
-# middlewares
-from middlewares import acs_message
 
 # create labeler
 bl = BotLabeler()
 bl.vbml_ignore_case = True
-bl.message_view.register_middleware(acs_message)
+
 
 # init repo
 playerRepo = Repository(entity=PlayerEntity())
@@ -36,13 +34,13 @@ bankRepo = Repository(entity=BankEntity())
 )
 async def bank_score_limit_get(m: Message, pid=None):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
         await acs_usage_error(m, 'bank_score_limit_get')
         return
     # get recipient bank
-    recipient_bank: BankEntity = await bankRepo.find_one_by({ 'player_id': int(pid) })
+    recipient_bank: BankEntity = bankRepo.find_one_by({ 'player_id': int(pid) })
     if recipient_bank == None:
         await acs_player_not_found(m)
         return
@@ -74,7 +72,7 @@ async def bank_score_limit_get(m: Message, pid=None):
 )
 async def bank_score_limit_set(m: Message, pid=None, value=None):
     # entites
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
         await acs_usage_error(m, 'bank_score_limit_set')
@@ -83,7 +81,7 @@ async def bank_score_limit_set(m: Message, pid=None, value=None):
         await acs_usage_error(m, 'bank_score_limit_set')
         return
     # get recipient
-    recipient_bank: BankEntity = await bankRepo.find_one_by({ 'player_id': int(pid) })
+    recipient_bank: BankEntity = bankRepo.find_one_by({ 'player_id': int(pid) })
     if recipient_bank == None:
         await acs_player_not_found(m)
         return
@@ -95,7 +93,7 @@ async def bank_score_limit_set(m: Message, pid=None, value=None):
 
     # updates
     # set bank score limit
-    await bankRepo.update({ 'player_id': int(pid) }, { 'score_limit': int(value) })
+    bankRepo.update({ 'player_id': int(pid) }, { 'score_limit': int(value) })
     
     # acs answer
     acs_response = f'-- Новый лимит счета банка для @id{recipient_bank.user_id}(игрока): ${int(value):,}'

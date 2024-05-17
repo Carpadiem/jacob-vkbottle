@@ -31,8 +31,8 @@ propertyRepo = Repository(entity=PropertyEntity())
 @bl.message(PayloadContainsRule({ 'action_type': 'button', 'action': 'show_my_property' }))
 async def show_my_property(m: Message):
     # entites
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
-    property: PropertyEntity = await propertyRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
+    property: PropertyEntity = propertyRepo.find_one_by({ 'user_id': m.from_id })
     
     player_phone = list(filter(lambda item: item['id'] == property.phone_id, game_property['phones']))
     player_computer = list(filter(lambda item: item['id'] == property.computer_id, game_property['computers']))
@@ -64,7 +64,7 @@ async def show_property_shop(event: MessageEvent):
     # payload
     payload = event.get_payload_json()
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': event.user_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': event.user_id })
 
     await event.edit_message(
         message=f'{ emojies.key } { player.nickname }, Магазин имущества:',
@@ -88,7 +88,7 @@ async def property_shop_category(event: MessageEvent):
     # payload
     payload = event.get_payload_json()
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': event.user_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': event.user_id })
 
     category = payload['category']
     keyboard = Keyboard(one_time=False, inline=True)
@@ -157,7 +157,7 @@ async def property_shop_buy(event: MessageEvent):
     # payload
     payload = event.get_payload_json()
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': event.user_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': event.user_id })
 
     answer_text = ''
 
@@ -177,7 +177,7 @@ async def property_shop_buy(event: MessageEvent):
             await raw_event_error_message(event, text, keyboard)
             return
         # update player table
-        await playerRepo.update({ 'user_id': event.user_id }, { 'money': player.money - price['amount'] })
+        playerRepo.update({ 'user_id': event.user_id }, { 'money': player.money - price['amount'] })
         
         # answer text
         # find object in list by python-prop
@@ -188,7 +188,7 @@ async def property_shop_buy(event: MessageEvent):
         pass
 
     # update property table
-    await propertyRepo.update({ 'user_id': event.user_id }, { 'phone_id': prop_id })
+    propertyRepo.update({ 'user_id': event.user_id }, { 'phone_id': prop_id })
     
     # answer
     await event.edit_message(

@@ -20,7 +20,7 @@ playerRepo = Repository(entity=PlayerEntity())
 # handlers
 @bl.message(PayloadContainsOrTextRule(payload={ 'action_type': 'button', 'action': 'donate' }, text=['донат']))
 async def donate(m: Message):
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # answer
     text = f'{ emojies.gem_stone } { player.nickname }, Какой вид доната интересует?'
     await m.answer(message=text, keyboard=keyboards['donate'])
@@ -30,7 +30,7 @@ async def donate(m: Message):
 
 @bl.message(PayloadContainsRule({ 'action_type': 'button', 'action': 'donate_currency' }))
 async def donate_currency(m: Message):
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # answer
     text = f'''{ emojies.option } { player.nickname }, Информация по валютному донату:
 
@@ -61,7 +61,7 @@ async def donate_currency(m: Message):
 
 @bl.message(PayloadContainsRule({ 'action_type': 'button', 'action': 'donate_privilege' }))
 async def donate_currency(m: Message):
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # answer
     text = f'''{ emojies.gem_stone } { player.nickname }, Информация по привилегиям:
 
@@ -97,7 +97,7 @@ async def donate_currency(m: Message):
 @bl.message(PayloadContainsRule({ 'action_type': 'button', 'action': 'donate_donation' }))
 async def donate_donation(m: Message):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # answer
     text = f'''{ emojies.like } Спасибо за проявленный интерес к игре и желание помочь в развитии!
 

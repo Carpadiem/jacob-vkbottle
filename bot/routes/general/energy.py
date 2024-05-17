@@ -24,10 +24,10 @@ energyRepo = Repository(entity=EnergyEntity())
 @bl.message(text=['энергия'])
 async def energy(m: Message):
     # entites
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
-    energy: EnergyEntity = await energyRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
+    energy: EnergyEntity = energyRepo.find_one_by({ 'user_id': m.from_id })
     # ...
-    player_energy = await get_energy(m.from_id)
+    player_energy = get_energy(m.from_id)
     if player_energy > energy.energy_limit:
         player_energy = energy.energy_limit
     # answer

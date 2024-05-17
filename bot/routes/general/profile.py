@@ -25,9 +25,9 @@ playerRepo = Repository(entity=PlayerEntity())
 @bl.message(PayloadContainsOrTextRule(payload={ 'action_type': 'button', 'action': 'show_profile' }, text='профиль'))
 async def profile(m: Message):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
 
-    player_profile_lines_text = await get_player_profile_text(player.player_id)
+    player_profile_lines_text = get_player_profile_text(player.player_id)
 
     text = f'''{ emojies.ledger } { player.nickname }, Ваш профиль:
 

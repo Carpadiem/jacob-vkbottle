@@ -16,7 +16,7 @@ class RoleRule(ABCRule[BaseMessageMin]):
 
     async def check(self, event: BaseMessageMin) -> bool:
         # entities
-        player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': event.from_id })
+        player: PlayerEntity = playerRepo.find_one_by({ 'user_id': event.from_id })
         if player.role in self.roles:
             return True
         else:

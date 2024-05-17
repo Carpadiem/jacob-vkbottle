@@ -9,13 +9,13 @@ playerRepo = Repository(entity=PlayerEntity())
 energyRepo = Repository(entity=EnergyEntity())
 
 
-async def get_player_profile_text(player_id: int):
+def get_player_profile_text(player_id: int):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'player_id': player_id })
-    energy: EnergyEntity = await energyRepo.find_one_by({ 'player_id': player.player_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'player_id': player_id })
+    energy: EnergyEntity = energyRepo.find_one_by({ 'player_id': player.player_id })
     
     # energy calculation
-    player_energy = await get_energy(player.user_id)
+    player_energy = get_energy(player.user_id)
     if player_energy > energy.energy_limit:
         player_energy = energy.energy_limit
     

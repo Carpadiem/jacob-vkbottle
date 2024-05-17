@@ -23,7 +23,7 @@ playerRepo = Repository(entity=PlayerEntity())
 @bl.message(PayloadContainsRule({ 'action_type': 'button', 'action': 'report' }))
 async def report(m: Message):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # answer
     text = f'{ emojies.mount } { player.nickname }, Напишите "репорт [текст]", чтобы отправить ваше сообщение в поддержку'
     await m.answer(text)
@@ -32,7 +32,7 @@ async def report(m: Message):
 @bl.message(text=['репорт <text>', 'репорт'])
 async def report_text(m: Message, text=None):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if text == None:
         text = f'{ emojies.sparkles } { player.nickname }, Введите текст репорта. Пример: "репорт [текст]"'

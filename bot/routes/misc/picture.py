@@ -19,7 +19,7 @@ playerRepo = Repository(entity=PlayerEntity())
 # handlers
 @bl.message(PayloadContainsRule({ 'action_type': 'button', 'action': 'picture' }))
 async def picture(m: Message):
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
 
     # upload
     uploader = PhotoMessageUploader(m.ctx_api)

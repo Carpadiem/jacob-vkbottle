@@ -9,13 +9,10 @@ from utils.is_number import is_number
 from constants import game_roles
 from routes.admin.acs.output import acs_usage_error, acs_success, acs_error, acs_player_not_found
 
-# middlewares
-from middlewares import acs_message
 
 # create labeler
 bl = BotLabeler()
 bl.vbml_ignore_case = True
-bl.message_view.register_middleware(acs_message)
 
 # init repo
 playerRepo = Repository(entity=PlayerEntity())
@@ -51,13 +48,13 @@ playerRepo = Repository(entity=PlayerEntity())
 )
 async def role_get(m: Message, pid=None):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
         await acs_usage_error(m, 'role_get')
         return
     # get recipient
-    recipient: PlayerEntity = await playerRepo.find_one_by({ 'player_id': int(pid) })
+    recipient: PlayerEntity = playerRepo.find_one_by({ 'player_id': int(pid) })
     if recipient == None:
         await acs_player_not_found(m)
         return
@@ -90,7 +87,7 @@ async def role_get(m: Message, pid=None):
 )
 async def role_set(m: Message, pid=None, role=None):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
         await acs_usage_error(m, 'role_set')
@@ -108,13 +105,13 @@ async def role_set(m: Message, pid=None, role=None):
         await acs_error(m, 'Вы не можете выдать роль самому себе')
         return
     # get recipient
-    recipient: PlayerEntity = await playerRepo.find_one_by({ 'player_id': int(pid) })
+    recipient: PlayerEntity = playerRepo.find_one_by({ 'player_id': int(pid) })
     if recipient == None:
         await acs_player_not_found(m)
         return
     # updates
     # set role
-    await playerRepo.update({ 'player_id': int(pid) }, { 'role': role })
+    playerRepo.update({ 'player_id': int(pid) }, { 'role': role })
     
     # acs answer
     acs_response = f'-- Новая роль для @id{recipient.user_id}(игрока): { str(role).capitalize() }'

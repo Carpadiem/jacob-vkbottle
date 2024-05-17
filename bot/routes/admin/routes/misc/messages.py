@@ -33,13 +33,13 @@ energyRepo = Repository(entity=EnergyEntity())
 )
 async def message_send(m: Message, pid=None, text=None):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
         await acs_usage_error(m, 'profile_get')
         return
     # get recipient
-    recipient: PlayerEntity = await playerRepo.find_one_by({ 'player_id': int(pid) })
+    recipient: PlayerEntity = playerRepo.find_one_by({ 'player_id': int(pid) })
     if recipient == None:
         await acs_player_not_found(m)
         return

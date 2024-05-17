@@ -38,11 +38,9 @@ class EachMessage(BaseMiddleware[Message]):
 
         # Try find user in db.
         # Generate player_id if not exist.
-        player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': sender_id })
-        if player == None:
-            player_id = await playerRepo.count() + 1
-        else:
-            player_id = player.player_id
+        player: PlayerEntity = playerRepo.find_one_by({ 'user_id': sender_id })
+        if player == None: player_id = playerRepo.count() + 1
+        else: player_id = player.player_id
 
         # now timestamp for ts_registration column in db
         ts_now = datetime.now().timestamp()
@@ -65,7 +63,7 @@ class EachMessage(BaseMiddleware[Message]):
             money=0,
             ts_registration=ts_now,
         )
-        try: await playerRepo.save(playerEntity)
+        try: playerRepo.save(playerEntity)
         except Exception as e: Log(f'[exception][each_middleware / save player entity]: {e}')
         
         # init player-bank in table
@@ -78,7 +76,7 @@ class EachMessage(BaseMiddleware[Message]):
             transfers_limit=20,
             ts_previous_transfer=ts_now,
         )
-        try: await bankRepo.save(bankEntity)
+        try: bankRepo.save(bankEntity)
         except Exception as e: Log(f'[exception][each_middleware / save bank entity]: {e}')
 
         # init player-cases in table
@@ -90,7 +88,7 @@ class EachMessage(BaseMiddleware[Message]):
             count_3=0,
             count_4=0,
         )
-        try: await casesRepo.save(casesEntity)
+        try: casesRepo.save(casesEntity)
         except Exception as e: Log(f'[exception][each_middleware / save cases entity]: {e}')
 
         # init bank
@@ -100,7 +98,7 @@ class EachMessage(BaseMiddleware[Message]):
             business_id=0,
             ts_previous_profit=ts_now,
         )
-        try: await businessRepo.save(businessEntity)
+        try: businessRepo.save(businessEntity)
         except Exception as e: Log(f'[exception][each_middleware / save business entity]: {e}')
 
         # init energy
@@ -111,7 +109,7 @@ class EachMessage(BaseMiddleware[Message]):
             energy_limit=20,
             ts_previous_use=ts_now,
         )
-        try: await energyRepo.save(energyEntity)
+        try: energyRepo.save(energyEntity)
         except Exception as e: Log(f'[exception][each_middleware / save energy entity]: {e}')
 
         # init property
@@ -124,7 +122,7 @@ class EachMessage(BaseMiddleware[Message]):
             washing_machine_id=0,
             shoes_id=0,
         )
-        try: await propertyRepo.save(propertyEntity)
+        try: propertyRepo.save(propertyEntity)
         except Exception as e: Log(f'[exception][each_middleware / save property entity]: {e}')
 
         # init vehicles
@@ -134,5 +132,5 @@ class EachMessage(BaseMiddleware[Message]):
             vehicles='[]',
             garage_slots_limit = 3,
         )
-        try: await vehhiclesRepo.save(vehiclesEntity)
+        try: vehhiclesRepo.save(vehiclesEntity)
         except Exception as e: Log(f'[exception][each_middleware / save vehicles entity]: {e}')

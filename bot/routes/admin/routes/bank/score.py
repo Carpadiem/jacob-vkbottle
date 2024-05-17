@@ -6,16 +6,13 @@ from rules import RoleRule
 # utils
 from utils.is_number import is_number
 # consts
-from constants import game_roles
 from routes.admin.acs.output import acs_usage_error, acs_success, acs_error, acs_player_not_found
 
-# middlewares
-from middlewares import acs_message
 
 # create labeler
 bl = BotLabeler()
 bl.vbml_ignore_case = True
-bl.message_view.register_middleware(acs_message)
+
 
 # init repo
 playerRepo = Repository(entity=PlayerEntity())
@@ -36,13 +33,13 @@ bankRepo = Repository(entity=BankEntity())
 )
 async def bank_score_get(m: Message, pid=None):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
         await acs_usage_error(m, 'bank_score_get')
         return
     # get recipient bank
-    recipient_bank: BankEntity = await bankRepo.find_one_by({ 'player_id': int(pid) })
+    recipient_bank: BankEntity = bankRepo.find_one_by({ 'player_id': int(pid) })
     if recipient_bank == None:
         await acs_player_not_found(m)
         return
@@ -85,7 +82,7 @@ async def bank_score_get(m: Message, pid=None):
 )
 async def bank_score_add(m: Message, pid=None, amount=None):
     # entites
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
         await acs_usage_error(m, 'bank_score_add')
@@ -94,13 +91,13 @@ async def bank_score_add(m: Message, pid=None, amount=None):
         await acs_usage_error(m, 'bank_score_add')
         return
     # get recipient
-    recipient_bank: BankEntity = await bankRepo.find_one_by({ 'player_id': int(pid) })
+    recipient_bank: BankEntity = bankRepo.find_one_by({ 'player_id': int(pid) })
     if recipient_bank == None:
         await acs_player_not_found(m)
         return
     # updates
     # add bank score
-    await bankRepo.update({ 'player_id': int(pid) }, { 'score': recipient_bank.score + int(amount) })
+    bankRepo.update({ 'player_id': int(pid) }, { 'score': recipient_bank.score + int(amount) })
     
     # acs answer
     acs_response = f'-- + ${int(amount):,} { emojies.dollar_banknote } на счет банка для @id{recipient_bank.user_id}(игрока)'
@@ -139,7 +136,7 @@ async def bank_score_add(m: Message, pid=None, amount=None):
 )
 async def bank_score_reduce(m: Message, pid=None, amount=None):
     # entites
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
         await acs_usage_error(m, 'bank_score_reduce')
@@ -148,14 +145,14 @@ async def bank_score_reduce(m: Message, pid=None, amount=None):
         await acs_usage_error(m, 'bank_score_reduce')
         return
     # get recipient
-    recipient_bank: BankEntity = await bankRepo.find_one_by({ 'player_id': int(pid) })
+    recipient_bank: BankEntity = bankRepo.find_one_by({ 'player_id': int(pid) })
     if recipient_bank == None:
         await acs_player_not_found(m)
         return
     # updates
     # add bank score
     result = recipient_bank.score - int(amount)
-    await bankRepo.update({ 'player_id': int(pid) }, { 'score': 0 if result < 0 else result })
+    bankRepo.update({ 'player_id': int(pid) }, { 'score': 0 if result < 0 else result })
     # acs answer
     acs_response = f'-- - ${int(amount):,} { emojies.dollar_banknote } со счета банка для @id{recipient_bank.user_id}(игрока)'
     await acs_success(m, acs_response)

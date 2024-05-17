@@ -27,7 +27,7 @@ playerRepo = Repository(entity=PlayerEntity())
 ))
 async def vehicle(m: Message):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # answer
     text = f'''{ emojies.car } { player.nickname }, Добро пожаловать в меню автотранспорта
 

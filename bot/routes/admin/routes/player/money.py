@@ -31,13 +31,13 @@ playerRepo = Repository(entity=PlayerEntity())
 )
 async def money_get(m: Message, pid=None):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
         await acs_usage_error(m, 'money_get')
         return
     # get recipient
-    recipient: PlayerEntity = await playerRepo.find_one_by({ 'player_id': int(pid) })
+    recipient: PlayerEntity = playerRepo.find_one_by({ 'player_id': int(pid) })
     if recipient == None:
         await acs_player_not_found(m)
         return
@@ -69,7 +69,7 @@ async def money_get(m: Message, pid=None):
 )
 async def money_add(m: Message, pid=None, amount=None):
     # entites
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
         await acs_usage_error(m, 'money_add')
@@ -78,13 +78,13 @@ async def money_add(m: Message, pid=None, amount=None):
         await acs_usage_error(m, 'money_add')
         return
     # get recipient
-    recipient: PlayerEntity = await playerRepo.find_one_by({ 'player_id': int(pid) })
+    recipient: PlayerEntity = playerRepo.find_one_by({ 'player_id': int(pid) })
     if recipient == None:
         await acs_player_not_found(m)
         return
     # updates
     # set nickname
-    await playerRepo.update({ 'player_id': int(pid) }, { 'money': recipient.money + int(amount) })
+    playerRepo.update({ 'player_id': int(pid) }, { 'money': recipient.money + int(amount) })
     
     # acs answer
     acs_response = f'-- + ${int(amount):,} { emojies.dollar_banknote } для @id{recipient.user_id}(игрока)'
@@ -112,7 +112,7 @@ async def money_add(m: Message, pid=None, amount=None):
 )
 async def money_reduce(m: Message, pid=None, amount=None):
     # entites
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
         await acs_usage_error(m, 'money_reduce')
@@ -121,7 +121,7 @@ async def money_reduce(m: Message, pid=None, amount=None):
         await acs_usage_error(m, 'money_reduce')
         return
     # get recipient
-    recipient: PlayerEntity = await playerRepo.find_one_by({ 'player_id': int(pid) })
+    recipient: PlayerEntity = playerRepo.find_one_by({ 'player_id': int(pid) })
     if recipient == None:
         await acs_player_not_found(m)
         return
@@ -130,7 +130,7 @@ async def money_reduce(m: Message, pid=None, amount=None):
     
     # check if result of calculate < zero
     result = recipient.money - int(amount)
-    await playerRepo.update({ 'player_id': int(pid) }, { 'money': 0 if result < 0 else result })
+    playerRepo.update({ 'player_id': int(pid) }, { 'money': 0 if result < 0 else result })
     
     # acs answer
     acs_response = f'-- - ${int(amount):,} { emojies.dollar_banknote } для @id{recipient.user_id}(игрока)'

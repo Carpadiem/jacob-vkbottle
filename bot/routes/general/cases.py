@@ -32,8 +32,8 @@ casesRepo = Repository(entity=CasesEntity())
 @bl.message(PayloadContainsOrTextRule(payload={ 'action_type': 'button', 'action': 'show_cases_shop' }, text=['кейсы', 'кейс']))
 async def cases_shop(m: Message):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
-    cases: CasesEntity = await casesRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
+    cases: CasesEntity = casesRepo.find_one_by({ 'user_id': m.from_id })
     # answer
     text = f'{ emojies.package } { player.nickname }, Меню кейсов:'
     template = templates['cases_shop'](counts=[cases.count_1, cases.count_2, cases.count_3, cases.count_4])
@@ -51,8 +51,8 @@ async def buy_case(m: Message):
     payload = m.get_payload_json()
     case_id = payload['case_id']
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
-    cases: CasesEntity = await casesRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
+    cases: CasesEntity = casesRepo.find_one_by({ 'user_id': m.from_id })
     # check price & player money
     case_price = game_cases[case_id]['price']['amount']
     if player.money < case_price:
@@ -61,7 +61,7 @@ async def buy_case(m: Message):
         return
     # update
     cases_json = cases.__dict__
-    await casesRepo.update({ 'user_id': m.from_id }, { f'count_{case_id}': cases_json[f'count_{case_id}'] + 1 } )
+    casesRepo.update({ 'user_id': m.from_id }, { f'count_{case_id}': cases_json[f'count_{case_id}'] + 1 } )
     # answer
     text = f'''
     { emojies.package } { player.nickname }, Успешная покупка x1 { game_cases[case_id]["name"] }!
@@ -80,8 +80,8 @@ async def open_case(m: Message):
     payload = m.get_payload_json()
     case_id = payload['case_id']
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
-    cases: CasesEntity = await casesRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
+    cases: CasesEntity = casesRepo.find_one_by({ 'user_id': m.from_id })
 
     case_name = game_cases[case_id]['name']
 
@@ -109,16 +109,16 @@ async def open_case(m: Message):
     text = f'{ emojies.package } { player.nickname }, Вот что было внутри "{case_name}"\n\n'
     if item_type == 'money':
         text += f'{ emojies.option } ${item_amount_result:,} { emojies.dollar_banknote }'
-        await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + item_amount_result })
+        playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + item_amount_result })
     elif item_type == 'experience':
         text += f'{ emojies.option } Опыт {item_amount_result:,}'
-        await playerRepo.update({ 'user_id': m.from_id }, { 'experience': player.experience + item_amount_result })
+        playerRepo.update({ 'user_id': m.from_id }, { 'experience': player.experience + item_amount_result })
     elif item_type == 'special_currency':
         text += f'{ emojies.option } Спецвалюта {item_amount_result:,}'
-        await playerRepo.update({ 'user_id': m.from_id }, { 'special_currency': player.special_currency + item_amount_result })
+        playerRepo.update({ 'user_id': m.from_id }, { 'special_currency': player.special_currency + item_amount_result })
 
     # reduce case
-    await casesRepo.update({ 'user_id': m.from_id }, { f'count_{case_id}': current_case_count - 1 })
+    casesRepo.update({ 'user_id': m.from_id }, { f'count_{case_id}': current_case_count - 1 })
     current_case_count = current_case_count - 1
 
     # open more button

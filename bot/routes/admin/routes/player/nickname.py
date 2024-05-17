@@ -37,13 +37,13 @@ playerRepo = Repository(entity=PlayerEntity())
 ) 
 async def nickname_get(m: Message, pid=None):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
         await acs_usage_error(m, 'nickname_get')
         return
     # get recipient
-    recipient: PlayerEntity = await playerRepo.find_one_by({ 'player_id': int(pid) })
+    recipient: PlayerEntity = playerRepo.find_one_by({ 'player_id': int(pid) })
     if recipient == None:
         await acs_player_not_found(m)
         return
@@ -76,7 +76,7 @@ async def nickname_get(m: Message, pid=None):
 )
 async def nickname_set(m: Message, pid=None, text=None):
     # entites
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
         await acs_usage_error(m, 'nickname_set')
@@ -85,13 +85,13 @@ async def nickname_set(m: Message, pid=None, text=None):
         await acs_usage_error(m, 'nickname_set')
         return
     # get recipient
-    recipient: PlayerEntity = await playerRepo.find_one_by({ 'player_id': int(pid) })
+    recipient: PlayerEntity = playerRepo.find_one_by({ 'player_id': int(pid) })
     if recipient == None:
         await acs_player_not_found(m)
         return
     # updates
     # set nickname
-    await playerRepo.update({ 'player_id': int(pid) }, { 'nickname': text })
+    playerRepo.update({ 'player_id': int(pid) }, { 'nickname': text })
     
     # acs answer
     acs_response = f'-- Новый никнейм для @id{recipient.user_id}(игрока): { text }'

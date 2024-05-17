@@ -41,7 +41,7 @@ playerRepo = Repository(entity=PlayerEntity())
 # exit-handler
 @bl.message(PayloadContainsRule({ 'action_type': 'button', 'action': 'exit_casino' }))
 async def exit_casino(m: Message):
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id }) # entities
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id }) # entities
     # answer
     text = f'{ emojies.slot_machine } { player.nickname }, Еще увидимся'
     await m.answer(message=text, keyboard=keyboards['games'])
@@ -53,7 +53,7 @@ async def exit_casino(m: Message):
 @bl.message(PayloadContainsOrTextRule(payload={ 'action_type': 'button', 'action': 'game_casino' }, text=['каз', 'казино']))
 async def casino(m: Message):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # answer
     text = f'''{ emojies.slot_machine } { player.nickname }, Добро пожаловать в казино!
     
@@ -73,7 +73,7 @@ class CasinoStates(BaseStateGroup):
 async def state_bet_state(m: Message):
     
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
 
     casino_bet = 0
 
@@ -151,7 +151,7 @@ async def state_bet_state(m: Message):
                 { emojies.option } Сейчас на руках: ${player.money+result:,} { emojies.dollar_banknote }
                 '''.replace('    ', '')
                 await m.answer(text)
-                await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + result })
+                playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + result })
                 return
             # lose
             elif result < 1:
@@ -163,7 +163,7 @@ async def state_bet_state(m: Message):
                 { emojies.option } Сейчас на руках: ${player.money-abs(result):,} { emojies.dollar_banknote }
                 '''.replace('    ', '')
                 await m.answer(text)
-                await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money - abs(result) })
+                playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money - abs(result) })
                 return
 
 
@@ -195,7 +195,7 @@ async def state_bet_state(m: Message):
 #     payload = m.get_payload_json()
 #     casino_bet = payload['casino_bet']
 #     # entities
-#     player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+#     player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
 
 
 # @bl.message(PayloadContainsRule({ 'action_type': 'button', 'action': 'play_casino' }))
@@ -204,7 +204,7 @@ async def state_bet_state(m: Message):
 #     payload = m.get_payload_json()
 #     casino_bet = payload['casino_bet']
 #     # entities
-#     player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+#     player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     
     
 

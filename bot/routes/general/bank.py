@@ -31,26 +31,12 @@ playerRepo = Repository(entity=PlayerEntity())
 bankRepo = Repository(entity=BankEntity())
 
 
-
-
-# async def clear_current_state(m: Message):
-#     current_state = await my_state_dispenser.get(m.peer_id)
-#     if current_state != None: await my_state_dispenser.delete(m.peer_id)
-
-# async def error_message(m: Message, text: str, keyboard=None, clear_state: bool=False):
-#     await m.answer(message=text, keyboard=keyboard)
-#     if clear_state:
-#         await clear_current_state(m)
-
-
-
-
 # handlers
 @bl.message(PayloadContainsOrTextRule(payload={ 'action_type': 'button', 'action': 'show_bank' }, text='банк'))
 async def money(m: Message):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
-    bank: BankEntity = await bankRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
+    bank: BankEntity = bankRepo.find_one_by({ 'user_id': m.from_id })
     # keyboard
     keyboard = keyboards['bank']
 
@@ -87,7 +73,7 @@ async def bank_cancel(m: Message):
 @bl.message(PayloadContainsOrTextRule(payload={'action_type': 'button', 'action': 'bank_push'}, text=['банк пополнить']))
 async def bank_push_state(m: Message):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # answer
     text = f'{ emojies.bank } { player.nickname }, Введите сумму для пополнения:'
     await m.answer(message=text, keyboard=keyboards['bank_cancel'])
@@ -110,22 +96,22 @@ async def state_bank_push_state(m: Message):
         await error_message(m, text)
         return
     # update bank score
-    bank: BankEntity = await bankRepo.find_one_by({ 'user_id': m.from_id })
+    bank: BankEntity = bankRepo.find_one_by({ 'user_id': m.from_id })
     if player.money < int(amount): # check player money
         text = f'{ emojies.sparkles } { player.nickname }, Не хватает денег. У вас: ${player.money:,} { emojies.dollar_banknote }'
         await error_message(m, text)
         return
     
     # check if amount < score_limit?
-    bank = await bankRepo.find_one_by({ 'user_id': m.from_id })
+    bank = bankRepo.find_one_by({ 'user_id': m.from_id })
     if bank.score + int(amount) > bank.score_limit:
         text = f'{ emojies.sparkles } { player.nickname }, Вы превышаете свой лимит хранения денег в банке (${bank.score_limit:,})'
         await error_message(m, text)
         return
 
     # update
-    await bankRepo.update({ 'user_id': m.from_id }, { 'score': bank.score + int(amount) })
-    await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money - int(amount) })
+    bankRepo.update({ 'user_id': m.from_id }, { 'score': bank.score + int(amount) })
+    playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money - int(amount) })
     # answer
     text = f'{ emojies.checkmark } { player.nickname }, Успешное пополнение счета на ${int(amount):,} { emojies.dollar_banknote }'
     await m.answer(message=text, keyboard=keyboards['bank'])
@@ -139,7 +125,7 @@ async def state_bank_push_state(m: Message):
 @bl.message(PayloadContainsOrTextRule(payload={'action_type': 'button', 'action': 'bank_pull'}, text=['банк снять']))
 async def bank_pull_state(m: Message):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # answer
     text = f'{ emojies.bank } { player.nickname }, Введите сумму для снятия:'
     await m.answer(message=text, keyboard=keyboards['bank_cancel'])
@@ -162,7 +148,7 @@ async def state_bank_pull_state(m: Message):
         await error_message(m=m, text=f'{ emojies.sparkles } { player.nickname }, Укажите целое число', keyboard=keyboards['bank'], clear_state=True)
         return
     # update bank score
-    bank: BankEntity = await bankRepo.find_one_by({ 'user_id': m.from_id })
+    bank: BankEntity = bankRepo.find_one_by({ 'user_id': m.from_id })
     if bank.score < int(amount): # check bank score
         # error message
         await error_message(
@@ -173,8 +159,8 @@ async def state_bank_pull_state(m: Message):
         await clear_current_state(m)
         return
     # update
-    await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + int(amount) })
-    await bankRepo.update({ 'user_id': m.from_id }, { 'score': bank.score - int(amount) })
+    playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + int(amount) })
+    bankRepo.update({ 'user_id': m.from_id }, { 'score': bank.score - int(amount) })
     # answer
     text = f'{ emojies.checkmark } { player.nickname }, Успешное снятия со счета ${int(amount):,} { emojies.dollar_banknote }'
     await m.answer(message=text, keyboard=keyboards['bank'])
@@ -188,7 +174,7 @@ async def state_bank_pull_state(m: Message):
 @bl.message(PayloadContainsOrTextRule(payload={ 'action_type': 'button', 'action': 'bank_transfer' }, text=['банк перевод']))
 async def bank_transfer(m: Message):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # answer
     text = f'{ emojies.bank } { player.nickname }, Введите игровой ID игрока и сумму через пробел:'
     await m.answer(message=text, keyboard=keyboards['bank_cancel'])
@@ -225,14 +211,14 @@ async def state_bank_transfer_state(m: Message):
     # update recipient's & sender's money & bank score
 
     # try find recipient from db
-    recipient_bank: BankEntity = await bankRepo.find_one_by({ 'player_id': recipient_id })
+    recipient_bank: BankEntity = bankRepo.find_one_by({ 'player_id': recipient_id })
     if recipient_bank == None:
         text=f'{ emojies.sparkles } { player.nickname }, Игрока с таким ID нет'
         await error_message(m, text)
         return
     
     # check sender bank score
-    sender_bank: BankEntity = await bankRepo.find_one_by({ 'user_id': m.from_id })
+    sender_bank: BankEntity = bankRepo.find_one_by({ 'user_id': m.from_id })
     if sender_bank.score < int(amount):
         await error_message(
             m=m,
@@ -257,14 +243,14 @@ async def state_bank_transfer_state(m: Message):
         return
 
     # try make transfer
-    await bankRepo.update({ 'user_id': m.from_id }, { 'score': sender_bank.score - int(amount) }) # sender bank.score update
-    await bankRepo.update({ 'player_id': recipient_id }, { 'score': recipient_bank.score + int(amount) }) # recipient bank.score update
+    bankRepo.update({ 'user_id': m.from_id }, { 'score': sender_bank.score - int(amount) }) # sender bank.score update
+    bankRepo.update({ 'player_id': recipient_id }, { 'score': recipient_bank.score + int(amount) }) # recipient bank.score update
 
     # update transfers
-    await bankRepo.update({ 'user_id': m.from_id }, { 'transfers': sender_bank.transfers - 1 })
+    bankRepo.update({ 'user_id': m.from_id }, { 'transfers': sender_bank.transfers - 1 })
 
     # answer
-    recipient: PlayerEntity = await playerRepo.find_one_by({ 'player_id': recipient_id })
+    recipient: PlayerEntity = playerRepo.find_one_by({ 'player_id': recipient_id })
     # answer sender
     text = f'''{ emojies.checkmark } { player.nickname }, Успешный перевод ${int(amount):,} { emojies.dollar_banknote} игроку @id{recipient.user_id}({ recipient.nickname })
 

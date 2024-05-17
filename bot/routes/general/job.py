@@ -32,7 +32,7 @@ energyRepo = Repository(entity=EnergyEntity())
 @bl.message(PayloadContainsOrTextRule(payload={ 'action_type': 'button', 'action': 'show_jobs' }, text=['работа', 'работать']))
 async def show_job(m: Message):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # answer
     text = f'''{ emojies.desktop } { player.nickname }, Меню работ в игре:'''
     await m.answer(message=text, keyboard=keyboards['jobs'])
@@ -45,11 +45,11 @@ async def job_work(m: Message):
     job_id = payload['job_id']
 
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
-    energy: EnergyEntity = await energyRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
+    energy: EnergyEntity = energyRepo.find_one_by({ 'user_id': m.from_id })
 
     # check is player have any energy
-    player_energy = await get_energy(m.from_id)
+    player_energy = get_energy(m.from_id)
     if player_energy < 1:
         text = f'''{ emojies.sparkles } { player.nickname }, У вас 0 энергии
 
@@ -74,9 +74,9 @@ async def job_work(m: Message):
     e_step = job_earnings_money['step']
     earnings = randrange(e_min, e_max, e_step)
     # updates
-    await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + earnings }) # update money
-    await playerRepo.update({ 'user_id': m.from_id }, { 'experience': player.experience + JOB_ADDING_EXPERIENCE }) # update experience
-    await use_energy(m.from_id) # update energy
+    playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + earnings }) # update money
+    playerRepo.update({ 'user_id': m.from_id }, { 'experience': player.experience + JOB_ADDING_EXPERIENCE }) # update experience
+    use_energy(m.from_id) # update energy
     # answer
     text = f'''{ emojies.desktop } { player.nickname }, Успешный рабочий день!
 

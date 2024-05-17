@@ -25,7 +25,7 @@ playerRepo = Repository(entity=PlayerEntity())
 # handlers
 @bl.message(PayloadContainsOrTextRule(payload={ 'action_type': 'button', 'action': 'game_cube' }, text=['кубик', 'куб']))
 async def cube(m: Message):
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     text = f'{ player.nickname }, Выберите число [1-6]:'
     await m.answer(message=text, keyboard=keyboards['game_cube'])
 
@@ -36,7 +36,7 @@ async def play_cube(m: Message):
     payload = m.get_payload_json()
     cube_number = payload['cube_number']
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # win or lose?
     random_number = randint(1, 6)
     if cube_number != random_number:
@@ -45,7 +45,7 @@ async def play_cube(m: Message):
         return
     # db updates
     reward_money = randrange(5, 25, 5) * 100 # describe the reward
-    await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + reward_money }) # update player's money
+    playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + reward_money }) # update player's money
     # answer
     text = f'''{ emojies.cube }{ emojies.comet } { player.nickname } Вы угадали
 

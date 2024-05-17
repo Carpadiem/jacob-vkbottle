@@ -5,18 +5,16 @@ from database.entities import PlayerEntity, CasesEntity
 from rules import RoleRule
 # utils
 from utils.is_number import is_number
-from utils.ts_now import ts_now
 # acs
 from routes.admin.acs.output import acs_usage_error, acs_success, acs_error, acs_player_not_found
-# middlewares
-from middlewares import acs_message
 # consts
 from constants import game_cases
+
 
 # create labeler
 bl = BotLabeler()
 bl.vbml_ignore_case = True
-bl.message_view.register_middleware(acs_message)
+
 
 # init repo
 playerRepo = Repository(entity=PlayerEntity())
@@ -37,13 +35,13 @@ casesRepo = Repository(entity=CasesEntity())
 )
 async def cases_get(m: Message, pid=None):
     # entities
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid):
         await acs_usage_error(m, 'cases_get')
         return
     # get recipient bank
-    recipient_cases: CasesEntity = await casesRepo.find_one_by({ 'player_id': int(pid) })
+    recipient_cases: CasesEntity = casesRepo.find_one_by({ 'player_id': int(pid) })
     if recipient_cases == None:
         await acs_player_not_found(m)
         return
@@ -93,7 +91,7 @@ async def cases_get(m: Message, pid=None):
 )
 async def cases_add(m: Message, pid=None, cid=None, amount=None):
     # entites
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid): await acs_usage_error(m, 'cases_add'); return
     if not is_number(cid): await acs_usage_error(m, 'cases_add'); return
@@ -108,7 +106,7 @@ async def cases_add(m: Message, pid=None, cid=None, amount=None):
         return
 
     # get recipient
-    recipient_cases: CasesEntity = await casesRepo.find_one_by({ 'player_id': int(pid) })
+    recipient_cases: CasesEntity = casesRepo.find_one_by({ 'player_id': int(pid) })
     if recipient_cases == None:
         await acs_player_not_found(m)
         return
@@ -121,7 +119,7 @@ async def cases_add(m: Message, pid=None, cid=None, amount=None):
     # updates
     # cases add
     recipient_case_by_cid = recipient_cases.__dict__[f'count_{cid}']
-    await casesRepo.update({ 'player_id': int(pid) }, { f'count_{cid}': recipient_case_by_cid + int(amount) }) 
+    casesRepo.update({ 'player_id': int(pid) }, { f'count_{cid}': recipient_case_by_cid + int(amount) }) 
     # acs answer
     case_name = game_cases[int(cid)]['name']
     acs_response = f'-- + {amount} кейсов "{case_name}" для @id{recipient_cases.user_id}(игрока)'
@@ -151,7 +149,7 @@ async def cases_add(m: Message, pid=None, cid=None, amount=None):
 )
 async def cases_reduce(m: Message, pid=None, cid=None, amount=None):
     # entites
-    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
     # validation
     if not is_number(pid): await acs_usage_error(m, 'cases_reduce'); return
     if not is_number(cid): await acs_usage_error(m, 'cases_reduce'); return
@@ -166,7 +164,7 @@ async def cases_reduce(m: Message, pid=None, cid=None, amount=None):
         return
 
     # get recipient
-    recipient_cases: CasesEntity = await casesRepo.find_one_by({ 'player_id': int(pid) })
+    recipient_cases: CasesEntity = casesRepo.find_one_by({ 'player_id': int(pid) })
     if recipient_cases == None:
         await acs_player_not_found(m)
         return
@@ -179,7 +177,7 @@ async def cases_reduce(m: Message, pid=None, cid=None, amount=None):
     # cases reduce
     recipient_case_by_cid = recipient_cases.__dict__[f'count_{cid}']
     update_result = recipient_case_by_cid - int(amount)
-    await casesRepo.update({ 'player_id': int(pid) }, { f'count_{cid}': 0 if update_result < 0 else update_result }) 
+    casesRepo.update({ 'player_id': int(pid) }, { f'count_{cid}': 0 if update_result < 0 else update_result }) 
     # acs answer
     case_name = game_cases[int(cid)]['name']
     acs_response = f'-- - {amount} кейсов "{case_name}" для @id{recipient_cases.user_id}(игрока)'
