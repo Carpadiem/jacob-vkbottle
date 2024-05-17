@@ -21,11 +21,11 @@ playerRepo = Repository(entity=PlayerEntity())
 async def picture(m: Message):
     player: PlayerEntity = playerRepo.find_one_by({ 'user_id': m.from_id })
 
-    # upload
+    # uploader
     uploader = PhotoMessageUploader(m.ctx_api)
     random_photo_id = randint(1, 49)
     photo = await uploader.upload(
-        file_source=f'bot/routes/misc/pictures/{random_photo_id}.jpg',
+        file_source=f'bot/assets/images/pictures/{random_photo_id}.jpg',
         peer_id=m.peer_id,
     )
 

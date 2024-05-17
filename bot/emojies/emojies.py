@@ -63,6 +63,7 @@ class emojies:
     cyclone = '\U0001f300'
     mans_shoe = '\U0001f45e'
 
+    hammer_and_wrench = '\U0001f6e0\U0000fe0f'
     fleur_de_lis = '\U0000269c\U0000fe0f'
     shopping_bags = '\U0001f6cd\U0000fe0f'
     checkbox = '\U00002611\U0000fe0f'

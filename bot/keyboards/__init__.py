@@ -10,9 +10,10 @@ from .general import (
 )
 from .vehicle import (
     autosalone_pages_inline,
-    garage_vehicles_inline,
-    back_to_garage_inline,
+    player_vehicles_inline,
+    vehicle_by_slot,
     motortransport_start,
+    garage_styling_inline,
 )
 from . import (
     start,
@@ -45,6 +46,7 @@ keyboards = {
     'motor_transport_start': motortransport_start.keyboard,
     'autosalone_pages_inline': autosalone_pages_inline.func_keyboard,
     
-    'player_garage_inline': garage_vehicles_inline.func_keyboard,
-    'back_to_player_garage_inline': back_to_garage_inline.keyboard,
+    'player_vehicles_inline': player_vehicles_inline.func_keyboard,
+    'vehicle_by_slot': vehicle_by_slot.func_keyboard,
+    'garage_styling_inline': garage_styling_inline.func_keyboard,
 }

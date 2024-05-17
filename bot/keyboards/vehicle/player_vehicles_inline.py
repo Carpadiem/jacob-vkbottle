@@ -18,7 +18,7 @@ def func_keyboard(player_vehicles: list):
         # get vehicle game id from player_vehicles
         vehicle_game_id = vehicle['id']
         
-        keyboard.add(Callback(label=f'{ emojies.option } { player_vehicle_name }', payload={ 'action_type': 'button', 'action': 'garage_select_vehicle', 'garage_slot': garage_slot, 'vehicle_game_id': vehicle_game_id }), color=KeyboardButtonColor.SECONDARY)
+        keyboard.add(Callback(label=f'{ emojies.option } { player_vehicle_name }', payload={ 'action_type': 'callback_button', 'action': 'garage_select_slot', 'garage_slot': garage_slot, 'vehicle_game_id': vehicle_game_id }), color=KeyboardButtonColor.SECONDARY)
         keyboard.row()
 
     keyboard.buttons.pop()
