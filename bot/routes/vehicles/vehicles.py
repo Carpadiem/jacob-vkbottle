@@ -22,13 +22,10 @@ playerRepo = Repository(entity=PlayerEntity())
 @bl.message(PayloadContainsOrTextRule(
     payload={ 'action_type': 'button', 'action': 'motor_transport' },
     text=[
-        'авто',
         'транспорт',
-        'автотранспорт',
-        'машина',
     ]
 ))
-async def motor_transport(m: Message):
+async def vehicle(m: Message):
     # entities
     player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
     # answer

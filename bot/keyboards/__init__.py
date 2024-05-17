@@ -1,15 +1,21 @@
-from . import (
-    jobs,
-    start,
+from .misc import misc
+from .games import games, cube, cup, casino
+from .general import (
     general,
+    jobs,
     bank,
     business,
-    games,
-    misc,
     donate,
     property,
-    motor_transport_start,
-    autosalone_pages_inline
+)
+from .vehicle import (
+    autosalone_pages_inline,
+    garage_vehicles_inline,
+    back_to_garage_inline,
+    motortransport_start,
+)
+from . import (
+    start,
 )
 
 keyboards = {
@@ -25,9 +31,9 @@ keyboards = {
     'jobs': jobs.keyboard,
     
     'games': games.keyboard,
-    'game_cube': games.keyboard_game_cube,
-    'game_cup': games.keyboard_game_cup,
-    'game_casino': games.keyboard_game_casino,
+    'game_cube': cube.keyboard,
+    'game_cup': cup.keyboard,
+    'game_casino': casino.keyboard,
 
     'misc': misc.keyboard,
 
@@ -36,6 +42,9 @@ keyboards = {
     'goto_property_shop': property.goto_property_shop,
     'property_shop': property.property_shop,
 
-    'motor_transport_start': motor_transport_start.keyboard,
-    'autosalone_pages_inline': autosalone_pages_inline.func,
+    'motor_transport_start': motortransport_start.keyboard,
+    'autosalone_pages_inline': autosalone_pages_inline.func_keyboard,
+    
+    'player_garage_inline': garage_vehicles_inline.func_keyboard,
+    'back_to_player_garage_inline': back_to_garage_inline.keyboard,
 }

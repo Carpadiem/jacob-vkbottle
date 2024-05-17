@@ -1,0 +1,167 @@
+# imports
+import json
+# vkbottle
+from vkbottle.bot import BotLabeler, Message
+from vkbottle import GroupEventType, EMPTY_KEYBOARD
+from vkbottle.bot import MessageEvent
+from vkbottle.dispatch.rules.base import PayloadContainsRule
+# rules
+from rules import PayloadContainsOrTextRule
+# database
+from database.entities import PlayerEntity, VehiclesEntity
+from database.repository import Repository
+# emojies
+from emojies import emojies
+# keyboards
+from keyboards import keyboards
+# consts
+from constants import game_vehicles, max_vehicles_on_page
+# utils
+from utils.log import Log
+from utils.is_number import is_number
+from utils.find_dict_in_list_by_prop import find_dict_in_list_by_prop
+# tools
+from tools import error_message
+
+# create labeler
+bl = BotLabeler()
+bl.vbml_ignore_case = True
+
+
+# repos
+playerRepo = Repository(entity=PlayerEntity())
+vehiclesRepo = Repository(entity=VehiclesEntity())
+
+
+
+
+async def get_player_vehicles(user_id: int) -> list:
+    # entities
+    vehicles: VehiclesEntity = await vehiclesRepo.find_one_by({ 'user_id': user_id })
+    player_vehicles: list = json.loads(vehicles.vehicles)
+    return player_vehicles
+
+
+
+
+# handlers
+@bl.message(PayloadContainsOrTextRule(
+    payload={ 'action_type': 'button', 'action': 'garage' },
+    text='гараж'
+))
+async def garage_message(m: Message):    
+    # entities
+    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+    
+    # player_vehicles_list
+    player_vehicles_list = await get_player_vehicles(m.from_id)
+    
+    # answer
+    if len(player_vehicles_list) > 0:
+        text = f'{ emojies.blue_car } { player.nickname }, В вашем гараже:'
+        await m.answer(message=text, keyboard=keyboards['player_garage_inline'](player_vehicles_list))
+    else:
+        text = f'''{ emojies.blue_car } { player.nickname }, В вашем гараже нет автомобилей
+
+        { emojies.tip } Посетите автосалон, чтобы приобрести новый транспорт
+        '''.replace('    ', '')
+        await m.answer(message=text)
+
+
+
+
+
+
+
+
+@bl.raw_event(
+    GroupEventType.MESSAGE_EVENT,
+    MessageEvent,
+    PayloadContainsRule({ 'action_type': 'button', 'action': 'garage_select_vehicle' })
+)
+async def garage_select_vehicle(event: MessageEvent):
+    # entities
+    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': event.user_id })
+    # payload data
+    payload = event.get_payload_json()
+    garage_slot = payload['garage_slot']
+    vehicle_game_id = payload['vehicle_game_id']
+
+    # get vehicle as game-object
+
+    game_vehicle = find_dict_in_list_by_prop(search_in=game_vehicles, where={ 'id': vehicle_game_id })
+    # build vehicle name
+    vehicle_brand: str = game_vehicle['brand']
+    vehicle_model_name: str = game_vehicle['model_name']
+    vehicle_name = f'{ vehicle_brand.capitalize() } { vehicle_model_name.capitalize() }'
+    # get vehicle specifications
+    vehicle_maxspeed = game_vehicle['specifications']['maxspeed']
+    vehicle_acceleration = game_vehicle['specifications']['acceleration']
+    vehicle_control = game_vehicle['specifications']['control']
+
+    # answer (callback edit)
+    text = f'''{ emojies.car } { player.nickname }, Ваш {vehicle_name}:
+
+    { emojies.symbol_id } Номера слота в гараже: { garage_slot }
+    
+    { emojies.max_speed } Скорость: { vehicle_maxspeed } км/ч
+    { emojies.acceleration } Разгон: { vehicle_acceleration } сек.
+    { emojies.control } Управляемость: { vehicle_control }/10
+
+    { emojies.tip } Продать: Гараж продать { garage_slot }
+    '''.replace('    ', '')
+    await event.edit_message(message=text, keyboard=keyboards['back_to_player_garage_inline'])
+
+
+
+
+@bl.raw_event(
+    GroupEventType.MESSAGE_EVENT,
+    MessageEvent,
+    PayloadContainsRule({ 'action_type': 'callback_button', 'action': 'back_to_garage' })
+)
+async def back_to_garage(event: MessageEvent):
+    # entities
+    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': event.user_id })
+
+    # player_vehicles_list
+    player_vehicles_list = await get_player_vehicles(event.user_id)
+
+    # answer
+    if len(player_vehicles_list) > 0:
+        text = f'{ emojies.blue_car } { player.nickname }, В вашем гараже:'
+        await event.edit_message(message=text, keyboard=keyboards['player_garage_inline'](player_vehicles_list))
+    else:
+        text = f'''{ emojies.blue_car } { player.nickname }, В вашем гараже нет автомобилей
+
+        { emojies.tip } Посетите автосалон, чтобы приобрести новый транспорт
+        '''.replace('    ', '')
+        await event.edit_message(message=text, keyboard=EMPTY_KEYBOARD)
+
+
+
+
+@bl.message(text='гараж продать <garage_slot>')
+async def sell_vehicle(m: Message, garage_slot=None):
+    # entities
+    player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
+
+    # validation
+    if not is_number(garage_slot):
+        text = f'{ emojies.sparkles } { player.nickname }, Пример использования команды: Гараж продать [номер слота]'
+        await error_message(m, text)
+        return
+
+    player_vehicles: list = await get_player_vehicles(m.from_id)
+    if len(player_vehicles) <= 0:
+        text = f'{ emojies.sparkles } { player.nickname }, В вашем гараже нет транспортных средств'
+        await error_message(m, text)
+        return
+    
+    try:
+        vehicle_for_sell = player_vehicles[garage_slot-1]
+    except IndexError:
+        text = f'{ emojies.sparkles } { player.nickname }, Это свободный слот, здесь нет транспортных средств'
+        await error_message(m, text)
+        return
+

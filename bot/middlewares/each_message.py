@@ -131,7 +131,8 @@ class EachMessage(BaseMiddleware[Message]):
         vehiclesEntity: VehiclesEntity = VehiclesEntity(
             player_id=player_id,
             user_id=sender_id,
-            vehicles='[]'
+            vehicles='[]',
+            garage_slots_limit = 3,
         )
         try: await vehhiclesRepo.save(vehiclesEntity)
         except Exception as e: Log(f'[exception][each_middleware / save vehicles entity]: {e}')

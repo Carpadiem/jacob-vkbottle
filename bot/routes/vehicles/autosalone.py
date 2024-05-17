@@ -35,9 +35,7 @@ playerRepo = Repository(entity=PlayerEntity())
 vehiclesRepo = Repository(entity=VehiclesEntity())
 
 
-async def show_autosalone_page(message_or_event: Message | MessageEvent, page: int):
-    # get user id from Message type or Event type
-    user_id = message_or_event.from_id if type(message_or_event) == Message else message_or_event.user_id
+async def show_autosalone_page(page: int):
     # autosalon datas
     autosalone_vehicles_count = len(game_vehicles) # autosalone_vehicles_count
     autosalone_pages_count = ceil(autosalone_vehicles_count/max_vehicles_on_page) # calculate autosalone pages count
@@ -96,7 +94,7 @@ async def autosalone(m: Message, page=1):
     # entities
     player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
     # show autosalone page
-    response = await show_autosalone_page(m, page)
+    response = await show_autosalone_page(page)
     if response == ('page_not_is_number'):
         text = f'{ emojies.sparkles } { player.nickname }, Пример использования команды: Автосалон [страница]'
         await error_message(m, text)
@@ -130,7 +128,7 @@ async def autosalone_change_page(event: MessageEvent):
     payload = event.get_payload_json()
     page = payload['page']
     # show autosalone page
-    response = await show_autosalone_page(event, page)
+    response = await show_autosalone_page(page)
     # answer (callback edit)
     text = f'''{ emojies.car } { player.nickname }, Автосалон:
 
@@ -179,6 +177,11 @@ async def autosalone_purchase(m: Message, vehicle_id=None):
     vehicles: VehiclesEntity = await vehiclesRepo.find_one_by({ 'user_id': m.from_id })
     # load, update, dump
     json_vehicles: List[dict] = json.loads(vehicles.vehicles)
+    # check Maximum garage slots
+    if len(json_vehicles) >= vehicles.garage_slots_limit:
+        text = f'{ emojies.sparkles } { player.nickname }, В гараже не осталось мест, у вас заняты все слоты ({ len(json_vehicles) }/{ vehicles.garage_slots_limit })'
+        await error_message(m, text)
+        return
     json_vehicles.append(vehicle_for_purchase)
     json_vehicles = json.dumps(json_vehicles)
     # update vehicles in db

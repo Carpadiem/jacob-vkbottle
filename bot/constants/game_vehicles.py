@@ -61,9 +61,9 @@ GAME_VEHICLES = [
         'autosalon_preview_image_url': '/assets/images/autosalon_previews/audi/s5.jpg',
         'description': 'Динамика, управляемость, скорость. Идеальный выбор для любителей быстрой езды.',
         'specifications': {
-            'maxspeed': 200,
-            'acceleration': 14,
-            'control': 6,
+            'maxspeed': 220,
+            'acceleration': 7.4,
+            'control': 5,
         },
     },
     {
