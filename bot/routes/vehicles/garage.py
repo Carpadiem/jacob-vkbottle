@@ -147,7 +147,7 @@ async def sell_vehicle(m: Message, garage_slot=None):
     player: PlayerEntity = await playerRepo.find_one_by({ 'user_id': m.from_id })
 
     # validation
-    if not is_number(garage_slot):
+    if not is_number(garage_slot) or int(garage_slot) < 0:
         text = f'{ emojies.sparkles } { player.nickname }, Пример использования команды: Гараж продать [номер слота]'
         await error_message(m, text)
         return
@@ -158,10 +158,33 @@ async def sell_vehicle(m: Message, garage_slot=None):
         await error_message(m, text)
         return
     
+    vehicle_for_sell = None
     try:
-        vehicle_for_sell = player_vehicles[garage_slot-1]
+        vehicle_for_sell = player_vehicles[int(garage_slot)-1]
     except IndexError:
-        text = f'{ emojies.sparkles } { player.nickname }, Это свободный слот, здесь нет транспортных средств'
+        text = f'{ emojies.sparkles } { player.nickname }, Это свободный слот. Здесь у вас нет транспортных средств'
         await error_message(m, text)
         return
+
+    price: int = vehicle_for_sell['price']
+    sell_price = round(price - price / 3)
+
+    # db updates
+    # update money (add)
+    await playerRepo.update({ 'user_id': m.from_id }, { 'money': player.money + sell_price })
+
+    # update vehicles
+    vehicles: VehiclesEntity = await vehiclesRepo.find_one_by({ 'user_id': m.from_id })
+    vehicles_json: list = json.loads(vehicles.vehicles)
+    vehicles_json.pop(int(garage_slot)-1)
+    vehicles_dumped = json.dumps(vehicles_json)
+    await vehiclesRepo.update({ 'user_id': m.from_id }, { 'vehicles': vehicles_dumped })
+
+    # get vehicle name
+    vehicle_name = str(vehicle_for_sell['brand']).capitalize() + str(vehicle_for_sell['model_name']).capitalize()
+
+    # answer
+    text = f'{ emojies.blue_car } { player.nickname }, Вы продали "{ vehicle_name }" за ${sell_price:,} { emojies.dollar_banknote }'
+    await m.answer(text)
+
 
